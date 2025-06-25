@@ -1,3 +1,5 @@
+import os
+import psycopg2
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -17,13 +19,18 @@ def hello_world():  # put application's code here
     )
 
 # Additional route that returns structured JSON
-@app.route('/api/data')
-def data():
-    return jsonify({
-        "name": "Allen",
-        "role": "Business Intelligence Developer",
-        "tools": ["Python", "Flask", "SQL", "Dash"]
-    })
+@app.route('/pocdb')
+def poc_db():
+    try:
+        conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+        cur = con.cursor()
+        cur.execute('SELECT NOW()')
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        return jsonify({"db_time": str(result[0])})
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 if __name__ == '__main__':
