@@ -23,7 +23,7 @@ def hello_world():  # put application's code here
 def poc_db():
     try:
         conn = psycopg2.connect(os.getenv('DATABASE_URL'))
-        cur = con.cursor()
+        cur = conn.cursor()
         cur.execute('SELECT NOW()')
         result = cur.fetchone()
         cur.close()
