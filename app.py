@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_file
 from sqlalchemy import func
 from models import SessionLocal, Product, AUMFlow, TransactionType
 
@@ -11,14 +11,27 @@ def home():
     return (
         "Welcome to my Flask BI project!<br><br>"
         "This is a personal, AI-assisted learning app built to explore Python, Flask, and cloud deployment.<br><br>"
-        "The goals of this project include:<br>"
-        "- Building interactive web applications using Flask<br>"
-        "- Connecting to and querying a PostgreSQL database<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demonstration route: <a href='/flows-summary'>/flows-summary</a> (or visit allenblack.org/flows-summary)<br>"
-        "- Transforming and presenting data using Python<br>"
-        "- Deploying apps to the cloud via Render<br><br>"
+
+        "<strong>Key accomplishments so far:</strong><br>"
+        "- Developed a full dimensional data warehouse using PostgreSQL<br>"
+        "- Built and deployed a Flask application on Render<br>"
+        "- Integrated SQLAlchemy ORM for structured data access and reuse<br>"
+        "- Modeled and loaded test data across flows, revenue, expenses, and compensation<br>"
+        "- Designed a clean and normalized star schema<br><br>"
+
+        "<strong>Demo & Resources:</strong><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo route: <a href='/flows-summary'>/flows-summary</a> (or visit allenblack.org/flows-summary)<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
+
         "Check back as new features and routes are added over time."
     )
+
+@app.route('/er-diagram')
+def er_diagram():
+    file_path = os.path.join(os.path.dirname(__file__), 'docs', 'v1.0', 'dist_perf_dw_er_diagram_spaced.png')
+    return send_file(file_path, mimetype='image/png')
+
 #db connection for local docker postgres
 #def get_db_connection():
 #    conn = psycopg2.connect(
