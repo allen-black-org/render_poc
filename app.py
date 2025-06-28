@@ -1,6 +1,7 @@
 import os
-import psycopg2
 from flask import Flask, jsonify
+from sqlalchemy import func
+from models import SessionLocal, Product, AUMFlow, TransactionType
 
 app = Flask(__name__)
 
@@ -19,43 +20,39 @@ def home():
         "Check back as new features and routes are added over time."
     )
 #db connection for local docker postgres
-def get_db_connection():
-    conn = psycopg2.connect(
-        host="dpg-d1djjc3ipnbc73dbvi6g-a.virginia-postgres.render.com",
-        database="pocdb_te73",
-        user="pocdb_te73_user",
-        password="TnlIBboc9mOqMrXWiYd1hiseRWpiCbPN"
-    )
-    return conn
+#def get_db_connection():
+#    conn = psycopg2.connect(
+#        host="dpg-d1djjc3ipnbc73dbvi6g-a.virginia-postgres.render.com",
+#        database="pocdb_te73",
+#        user="pocdb_te73_user",
+#        password="TnlIBboc9mOqMrXWiYd1hiseRWpiCbPN"
+#    )
+#    return conn
 
 @app.route("/flows-summary")
 def flows_summary():
-    conn = get_db_connection()
-    cur = conn.cursor()
+    session = SessionLocal()
 
-    query = """
-    SELECT
-        p.product_name,
-        tt.transaction_type_name,
-        SUM(f.flow_amount) AS total_flow
-    FROM dist_perf_dw.fact_aum_flows f
-    JOIN dist_perf_dw.dim_products p ON f.product_id = p.id
-    JOIN dist_perf_dw.dim_transaction_types tt ON f.transaction_type_id = tt.id
-    GROUP BY p.product_name, tt.transaction_type_name
-    ORDER BY p.product_name, tt.transaction_type_name;
-    """
+    results = (
+        session.query(
+            Product.product_name,
+            TransactionType.transaction_type_name,
+            func.sum(AUMFlow.flow_amount)
+        )
+        .join(AUMFlow.product)
+        .join(AUMFlow.transaction_type)
+        .group_by(Product.product_name, TransactionType.transaction_type_name)
+        .order_by(Product.product_name, TransactionType.transaction_type_name)
+        .all()
+    )
 
-    cur.execute(query)
-    results = cur.fetchall()
-    cur.close()
-    conn.close()
+    session.close()
 
-    # Format as nested dict: {product: {inflow: X, outflow: Y, ...}}
     summary = {}
-    for product, tx_type, amount in results:
+    for product, tx_type, total in results:
         if product not in summary:
             summary[product] = {}
-        summary[product][tx_type] = float(amount)
+        summary[product][tx_type] = float(total)
 
     return jsonify(summary)
 
