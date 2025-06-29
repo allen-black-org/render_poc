@@ -6,8 +6,7 @@ Base = declarative_base()
 
 # Replace with your connection string
 DATABASE_URL = (
-    "postgresql+psycopg2://pocdb_te73_user:TnlIBboc9mOqMrXWiYd1hiseRWpiCbPN"
-    "@dpg-d1djjc3ipnbc73dbvi6g-a.virginia-postgres.render.com/pocdb_te73"
+    "postgresql+psycopg2://postgres:jbO4QlgePv8AOPHY@db.anxemmjupdxemskdpkqt.supabase.co:5432/postgres?sslmode=require"
 )
 
 # Create the engine and session
