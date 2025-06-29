@@ -1,13 +1,15 @@
 import os
 from flask import Flask, jsonify, send_file
 from sqlalchemy import func
-from models import SessionLocal, Product, AUMFlow, TransactionType
+from models import SessionLocal, DimProducts, FactAUMFlow, DimTransactionTypes, DimDates
+from collections import defaultdict
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def home():
+    # 🔹 Home route: static info about the app and links to demo routes & ER diagram
     return (
         "Welcome to my Flask BI project!<br><br>"
         "This is a personal, AI-assisted learning app built to explore Python, Flask, and cloud deployment.<br><br>"
@@ -29,45 +31,53 @@ def home():
 
 @app.route('/er-diagram')
 def er_diagram():
+    # 🔹 ER Diagram route: returns a PNG file from docs directory
     file_path = os.path.join(os.path.dirname(__file__), 'docs', 'v1.0', 'dist_perf_dw_er_diagram_spaced.png')
     return send_file(file_path, mimetype='image/png')
 
-#db connection for local docker postgres
-#def get_db_connection():
-#    conn = psycopg2.connect(
-#        host="dpg-d1djjc3ipnbc73dbvi6g-a.virginia-postgres.render.com",
-#        database="pocdb_te73",
-#        user="pocdb_te73_user",
-#        password="TnlIBboc9mOqMrXWiYd1hiseRWpiCbPN"
-#    )
-#    return conn
-
 @app.route("/flows-summary")
 def flows_summary():
+    # 🔹 Flows summary route: aggregates FactAUMFlow data by year, product, and transaction type
     session = SessionLocal()
 
     results = (
         session.query(
-            Product.product_name,
-            TransactionType.transaction_type_name,
-            func.sum(AUMFlow.flow_amount)
+            DimDates.year_number,
+            DimProducts.product_name,
+            DimTransactionTypes.transaction_type_name,
+            func.sum(FactAUMFlow.flow_amount)
         )
-        .join(AUMFlow.product)
-        .join(AUMFlow.transaction_type)
-        .group_by(Product.product_name, TransactionType.transaction_type_name)
-        .order_by(Product.product_name, TransactionType.transaction_type_name)
+        .join(FactAUMFlow.product)
+        .join(FactAUMFlow.transaction_type)
+        .join(FactAUMFlow.year)
+        .group_by(DimDates.year_number, DimProducts.product_name, DimTransactionTypes.transaction_type_name)
+        .order_by(DimDates.year_number, DimProducts.product_name, DimTransactionTypes.transaction_type_name)
         .all()
     )
 
     session.close()
 
-    summary = {}
-    for product, tx_type, total in results:
-        if product not in summary:
-            summary[product] = {}
-        summary[product][tx_type] = float(total)
-
+    # 🔹 Convert query results into nested dict: year → product → tx_type → amount
+    summary = defaultdict(lambda: defaultdict(dict))
+    for year, product, tx_type, amount in results:
+        summary[year][product][tx_type] = float(amount)
     return jsonify(summary)
 
+# 🔹 Legacy example: manual dict-building method (commented out)
+""" Old dictionary method without using defaultdic. This explicitly defines layers
+    summary = {}
+    for year, product, tx_type, total in results:
+        year = str(year)
+
+        if year not in summary:
+            summary[year] = {}
+        if product not in summary[year]:
+            summary[year][product] = {}
+        summary[year][product][tx_type] = float(total)
+
+    return jsonify(summary)
+"""
+
 if __name__ == '__main__':
+    # 🔹 Local dev server runner
     app.run()

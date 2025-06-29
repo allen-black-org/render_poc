@@ -30,7 +30,7 @@ SELECT
     d = DATE_TRUNC('year', d)::DATE AS is_year_start,
     d = (DATE_TRUNC('year', d) + INTERVAL '1 YEAR - 1 day')::DATE AS is_year_end
 FROM
-    generate_series(DATE '2020-01-01', DATE '2030-12-31', INTERVAL '1 day') AS d;
+    generate_series(DATE '2000-01-01', DATE '2030-12-31', INTERVAL '1 day') AS d;
 -----------------------------------------------------------------------------------------	
 INSERT INTO dist_perf_dw.dim_regions (region_name) VALUES
 ('Northeast'),
