@@ -1,9 +1,11 @@
 import os
+from dotenv import load_dotenv
 from flask import Flask, jsonify, send_file
 from sqlalchemy import func
 from models import SessionLocal, DimProducts, FactAUMFlow, DimTransactionTypes, DimDates
 from collections import defaultdict
 
+load_dotenv()
 app = Flask(__name__)
 
 
