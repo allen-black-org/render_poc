@@ -13,6 +13,16 @@ Base = declarative_base()
 engine = create_engine(DATABASE_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine)
 
+class DimAccounts(Base):
+    __tablename__ = "dim_accounts"
+    __table_args__ = {"schema": "dist_perf_dw"}
+
+    id = Column(Integer, primary_key=True)
+    account_name = Column(String)
+    account_code = Column(String)
+    base_fee_rate = Column(Numeric)
+    base_fee_amount = Column(Numeric)
+
 class DimAdvisors(Base):
     __tablename__ = "dim_advisors"
     __table_args__ = {"schema": "dist_perf_dw"}
@@ -115,7 +125,6 @@ class DimProducts(Base):
     product_name = Column(String)
     asset_class_id = Column(Integer, ForeignKey("dist_perf_dw.dim_asset_classes.id"))
     vehicle_type_id = Column(Integer, ForeignKey("dist_perf_dw.dim_vehicle_types.id"))
-    base_fee_rate = Column(Numeric)
     launch_date = Column(Date)
     is_active = Column(Boolean)
 
@@ -150,6 +159,7 @@ class DimTransactionTypes(Base):
 
     id = Column(Integer, primary_key=True)
     transaction_type_name = Column(String)
+    is_inflow = Column(Boolean)
 
 
 class DimVehicles(Base):
@@ -181,11 +191,15 @@ class FactAUMFlow(Base):
     date_id = Column(Integer, ForeignKey("dist_perf_dw.dim_dates.id"))
     product_id = Column(Integer, ForeignKey("dist_perf_dw.dim_products.id"))
     transaction_type_id = Column(Integer, ForeignKey("dist_perf_dw.dim_transaction_types.id"))
+    wholesaler_id = Column(Integer, ForeignKey("dist_perf_dw.dim_wholesalers.id"))
+    account_id = Column(Integer, ForeignKey("dist_perf_dw.dim_accounts.id"))
     flow_amount = Column(Numeric)
 
     year = relationship("DimDates", foreign_keys=[date_id])
     product = relationship("DimProducts", foreign_keys=[product_id])
+    wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
     transaction_type = relationship("DimTransactionTypes", foreign_keys=[transaction_type_id])
+    account = relationship("DimAccounts", foreign_keys=[account_id])
 
 class FactRetentionSnapshots(Base):
     __tablename__ = "fact_retention_snapshots"

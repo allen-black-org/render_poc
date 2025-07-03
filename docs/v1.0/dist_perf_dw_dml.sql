@@ -157,14 +157,14 @@ INSERT INTO dist_perf_dw.dim_products (
     is_active
 )
 VALUES
-('Alpha Growth Fund', 1, 1, 0.0075, '2018-05-01', TRUE),
-('Beta Income Strategy', 2, 3, 0.0050, '2016-11-15', TRUE),
-('Gamma All Asset ETF', 3, 2, 0.0040, '2020-02-20', TRUE),
-('Delta Real Estate Trust', 5, 4, 0.0065, '2014-07-10', TRUE),
-('Omega Commodity Tracker', 6, 2, 0.0080, '2019-03-01', TRUE),
-('Zeta Private Equity Fund', 4, 6, 0.0200, '2012-01-01', FALSE), -- inactive
-('Sigma Model Portfolio', 3, 7, 0.0030, '2021-08-05', TRUE),
-('Theta Cash Reserve', 7, 1, 0.0010, '2022-10-01', TRUE);
+('Alpha Growth Fund', 1, 1, '2000-01-01', TRUE),
+('Beta Income Strategy', 2, 3, '22000-01-01', TRUE),
+('Gamma All Asset ETF', 3, 2, '22000-01-01', TRUE),
+('Delta Real Estate Trust', 5, 4, '2000-01-01', TRUE),
+('Omega Commodity Tracker', 6, 2, '2000-01-01', TRUE),
+('Zeta Private Equity Fund', 4, 6, '2000-01-01', FALSE), -- inactive
+('Sigma Model Portfolio', 3, 7, '2000-01-01', TRUE),
+('Theta Cash Reserve', 7, 1, '2000-01-01', TRUE);
 -----------------------------------------------------------------------------------------
 INSERT INTO dist_perf_dw.dim_expense_categories (category_name) VALUES
 ('Sales'),
@@ -197,18 +197,6 @@ INSERT INTO dist_perf_dw.dim_transaction_types (transaction_type_name, is_inflow
 ('Fee Withdrawal', FALSE, 'Assets deducted to pay management or service fees'),
 ('Adjustment', TRUE, 'Manual or data-driven correction of reported flows'),
 ('Chargeback', FALSE, 'Reversal of prior inflows or commissions due to clawbacks or cancellations');
------------------------------------------------------------------------------------------
-INSERT INTO dist_perf_dw.fact_aum_flows (
-    date_id, wholesaler_id, advisor_id, product_id,
-    channel_id, transaction_type_id, flow_amount
-)
-VALUES
-(1, 1, 1, 1, 1, 1, 500000.00),   -- Inflow from Alan Rivera into Alpha Growth Fund
-(1, 1, 1, 1, 1, 2, -100000.00),  -- Outflow same day (net +400k)
-(2, 2, 2, 2, 2, 1, 250000.00),   -- Inflow into Beta Income Strategy via IBD
-(2, 2, 2, 2, 2, 4, -50000.00),   -- Transfer out
-(3, 1, 1, 1, 1, 3, 150000.00),   -- Transfer in to Alpha Growth Fund
-(3, 1, 1, 1, 1, 5, 50000.00);    -- Reinvestment into Alpha Growth Fund
 -----------------------------------------------------------------------------------------
 -- flow_id 1: $500,000 inflow
 INSERT INTO dist_perf_dw.fact_retention_snapshots (
