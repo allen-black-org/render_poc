@@ -87,6 +87,7 @@ def aum_summary():
         .join(DimTransactionTypes, FactAUMFlow.transaction_type_id == DimTransactionTypes.id)
         .group_by(DimWholesalers.wholesaler_name)
         .order_by(DimWholesalers.wholesaler_name)
+        .limit(100)
         .all()
     )
 
