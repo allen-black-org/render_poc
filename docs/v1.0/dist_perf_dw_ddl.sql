@@ -144,6 +144,7 @@ CREATE TABLE dist_perf_dw.fact_aum_flows (
 	channel_id int4 NOT NULL,
 	transaction_type_id int4 NOT NULL,
 	flow_amount numeric NOT NULL,
+	account_aum_amount NUMERIC,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT fact_aum_flows_pkey PRIMARY KEY (id)
@@ -160,17 +161,17 @@ CREATE TABLE IF NOT EXISTS dist_perf_dw.fact_retention_snapshots (
     PRIMARY KEY (flow_id, snapshot_date_id)
 );
 -----------------------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS dist_perf_dw.fact_revenue (
-    id SERIAL PRIMARY KEY,
-    flow_id INT NOT NULL REFERENCES dist_perf_dw.fact_aum_flows(id),
-    product_id INT NOT NULL REFERENCES dist_perf_dw.dim_products(id),
-	advisor_id INT REFERENCES dist_perf_dw.dim_advisors(id),
-    fee_rate NUMERIC NOT NULL,
-	is_estimate BOOLEAN DEFAULT FALSE,
-    revenue_date_id INT REFERENCES dist_perf_dw.dim_dates(id),
-    revenue_amount NUMERIC NOT NULL,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE dist_perf_dw.fact_revenue (
+	id serial4 NOT NULL,
+	account_id int4 NOT NULL,
+	product_id int4 NOT NULL,
+	wholesaler_id int4 NOT NULL,
+	revenue_date_id int4 NULL,
+	fee_rate numeric NOT NULL,
+	revenue_amount numeric NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT fact_revenue_pkey PRIMARY KEY (id)
 );
 -----------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS dist_perf_dw.fact_distribution_expense (
@@ -242,10 +243,10 @@ ALTER TABLE dist_perf_dw.fact_distribution_expense ADD CONSTRAINT fact_distribut
 ALTER TABLE dist_perf_dw.fact_retention_snapshots ADD CONSTRAINT fact_retention_snapshots_flow_id_fkey FOREIGN KEY (flow_id) REFERENCES dist_perf_dw.fact_aum_flows(id);
 ALTER TABLE dist_perf_dw.fact_retention_snapshots ADD CONSTRAINT fact_retention_snapshots_snapshot_date_id_fkey FOREIGN KEY (snapshot_date_id) REFERENCES dist_perf_dw.dim_dates(id);
 
-ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_advisor_id_fkey FOREIGN KEY (advisor_id) REFERENCES dist_perf_dw.dim_advisors(id);
-ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_flow_id_fkey FOREIGN KEY (flow_id) REFERENCES dist_perf_dw.fact_aum_flows(id);
+ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_account_id_fkey FOREIGN KEY (account_id) REFERENCES dist_perf_dw.dim_accounts(id);
 ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_product_id_fkey FOREIGN KEY (product_id) REFERENCES dist_perf_dw.dim_products(id);
 ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_revenue_date_id_fkey FOREIGN KEY (revenue_date_id) REFERENCES dist_perf_dw.dim_dates(id);
+ALTER TABLE dist_perf_dw.fact_revenue ADD CONSTRAINT fact_revenue_wholesaler_id_fkey FOREIGN KEY (wholesaler_id) REFERENCES dist_perf_dw.dim_wholesalers(id);
 
 ALTER TABLE dist_perf_dw.fact_wholesaler_comp ADD CONSTRAINT fact_wholesaler_comp_date_id_fkey FOREIGN KEY (date_id) REFERENCES dist_perf_dw.dim_dates(id);
 ALTER TABLE dist_perf_dw.fact_wholesaler_comp ADD CONSTRAINT fact_wholesaler_comp_wholesaler_id_fkey FOREIGN KEY (wholesaler_id) REFERENCES dist_perf_dw.dim_wholesalers(id);

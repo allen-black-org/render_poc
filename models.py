@@ -194,6 +194,7 @@ class FactAUMFlow(Base):
     wholesaler_id = Column(Integer, ForeignKey("dist_perf_dw.dim_wholesalers.id"))
     account_id = Column(Integer, ForeignKey("dist_perf_dw.dim_accounts.id"))
     flow_amount = Column(Numeric)
+    account_aum_amount = Column(Numeric)
 
     year = relationship("DimDates", foreign_keys=[date_id])
     product = relationship("DimProducts", foreign_keys=[product_id])
@@ -222,20 +223,19 @@ class FactRevenue(Base):
     __table_args__ = {"schema": "dist_perf_dw"}
 
     id = Column(Integer, primary_key=True)
-    flow_id = Column(Integer, ForeignKey("dist_perf_dw.fact_aum_flows.id"))
+    account_id = Column(Integer, ForeignKey("dist_perf_dw.dim_accounts.id"))
     product_id = Column(Integer, ForeignKey("dist_perf_dw.dim_products.id"))
-    advisor_id = Column(Integer, ForeignKey("dist_perf_dw.dim_advisors.id"))
-    fee_rate = Column(Numeric)
-    is_estimate = Column(Boolean, default=False)
+    wholesaler_id = Column(Integer, ForeignKey("dist_perf_dw.dim_wholesalers.id"))
     revenue_date_id = Column(Integer, ForeignKey("dist_perf_dw.dim_dates.id"))
+    fee_rate = Column(Numeric)
     revenue_amount = Column(Numeric)
     created_at = Column(Date)
     updated_at = Column(Date)
 
-    flow = relationship("FactAUMFlow", foreign_keys=[flow_id])
     product = relationship("DimProducts", foreign_keys=[product_id])
-    advisor = relationship("DimAdvisors", foreign_keys=[advisor_id])
     revenue_date = relationship("DimDates", foreign_keys=[revenue_date_id])
+    rev_account = relationship("DimAccounts", foreign_keys=[account_id])
+    rev_wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
 
 
 class FactDistributionExpense(Base):
