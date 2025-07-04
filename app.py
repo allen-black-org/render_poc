@@ -98,7 +98,7 @@ def aum_summary():
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/revenue-summary")
 def revenue_summary():
-    # 🔹 AUM summary route: aggregates aum data by wholesaler
+
     session = SessionLocal()
 
     results = (
