@@ -2,7 +2,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, send_file
 from sqlalchemy import func, case
-from models import SessionLocal, DimProducts, FactAUMFlow, DimTransactionTypes, DimDates, DimWholesalers
+from models import (SessionLocal, DimProducts, FactAUMFlow
+, DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue)
 from collections import defaultdict
 
 load_dotenv()
@@ -23,8 +24,11 @@ def home():
         "- Designed a clean and normalized star schema<br><br>"
 
         "<strong>Demo & Resources:</strong><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo route: <a href='/flows-summary'>/flows-summary</a> (or visit allenblack.org/flows-summary)<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: <br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-summary'>/revenue-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/aum-summary'>/aum-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/flows-summary'>/flows-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
 
         "Check back as new features and routes are added over time."
@@ -70,30 +74,63 @@ def aum_summary():
     # 🔹 AUM summary route: aggregates aum data by wholesaler
     session = SessionLocal()
 
-    #define the conditional sum using SQLAlchemy "case"
-    #This function is for looks only as a sign switch is not necessary. The flows are in the proper pos or neg values.
-    # The sign switch is actually inaccurate
-    inflow_case = case(
-(DimTransactionTypes.is_inflow == True, FactAUMFlow.flow_amount),
-        else_=FactAUMFlow.flow_amount
-    )
-
     results = (
         session.query(
             DimWholesalers.wholesaler_name,
-            func.sum(inflow_case).label('current_aum')
+            (DimAccounts.account_name + '-' + DimAccounts.account_code).label("account_id"),
+            DimAccounts.base_fee_rate,
+            func.sum(FactAUMFlow.account_aum_amount),
+            func.sum(FactAUMFlow.account_aum_amount*DimAccounts.base_fee_rate),
         )
-        .join(FactAUMFlow, FactAUMFlow.wholesaler_id == DimWholesalers.id)
-        .join(DimTransactionTypes, FactAUMFlow.transaction_type_id == DimTransactionTypes.id)
-        .group_by(DimWholesalers.wholesaler_name)
-        .order_by(DimWholesalers.wholesaler_name)
+        .join(FactAUMFlow.wholesaler)
+        .join(FactAUMFlow.account)
+        .filter(FactAUMFlow.account_aum_amount > 0)
+        .group_by(DimWholesalers.wholesaler_name, DimAccounts.account_name + '-' + DimAccounts.account_code, DimAccounts.base_fee_rate)
+        .order_by(DimWholesalers.wholesaler_name, (DimAccounts.account_name + '-' + DimAccounts.account_code))
         .limit(100)
         .all()
     )
 
     session.close()
     return jsonify([
-        {"wholesaler": name, "current_aum": float(aum)} for name, aum in results])
+        {"wholesaler": name, "account_id": account, "fee_rate": rate, "account_aum": float(aum), "fee_amount": fee}
+        for name, account, rate, aum, fee in results])
+"""-----------------------------------------------------------------------------------------------------------------"""
+@app.route("/revenue-summary")
+def revenue_summary():
+    # 🔹 AUM summary route: aggregates aum data by wholesaler
+    session = SessionLocal()
+
+    results = (
+        session.query(
+            DimDates.full_date,
+            DimAccounts.account_name,
+            DimProducts.product_name,
+            DimWholesalers.wholesaler_name,
+            FactRevenue.fee_rate,
+            func.sum(FactRevenue.revenue_amount),
+        )
+        .join(FactRevenue.product)
+        .join(FactRevenue.rev_account)
+        .join(FactRevenue.rev_wholesaler)
+        .join(FactRevenue.revenue_date)
+        .group_by(DimDates.full_date,
+            DimAccounts.account_name,
+            DimProducts.product_name,
+            DimWholesalers.wholesaler_name,
+            FactRevenue.fee_rate)
+        .order_by(DimDates.full_date,
+            DimAccounts.account_name,
+            DimProducts.product_name,
+            DimWholesalers.wholesaler_name,
+            FactRevenue.fee_rate)
+        .limit(100)
+        .all()
+    )
+    session.close()
+    return jsonify([
+        {"Rev_Date": date, "account": account, "product": product, "wholesaler": wholesaler, "fee_rate": fee_rate, "revenue": revenue}
+        for date, account, product, wholesaler, fee_rate, revenue in results])
 """-----------------------------------------------------------------------------------------------------------------"""
 
 if __name__ == '__main__':
