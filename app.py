@@ -25,9 +25,10 @@ def home():
 
         "<strong>Demo & Resources:</strong><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: <br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-summary'>/revenue-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/aum-summary'>/aum-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/flows-summary'>/flows-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-product-monthly-summary'>/revenue-product-monthly-summary</a><br>"
+       " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/wholesaler-aum-account-summary'>/wholesaler-aum-account-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/account-flows-summary'>/account-flows-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
 
@@ -40,23 +41,23 @@ def er_diagram():
     file_path = os.path.join(os.path.dirname(__file__), 'docs', 'v1.0', 'dist_perf_dw_er_diagram_spaced.png')
     return send_file(file_path, mimetype='image/png')
 """-----------------------------------------------------------------------------------------------------------------"""
-@app.route("/flows-summary")
-def flows_summary():
+@app.route("/account-flows-summary")
+def account_flows_summary():
     # 🔹 Flows summary route: aggregates FactAUMFlow data by year, product, and transaction type
     session = SessionLocal()
 
     results = (
         session.query(
+            DimAccounts.account_name,
             DimDates.year_number,
-            DimProducts.product_name,
             DimTransactionTypes.transaction_type_name,
             func.sum(FactAUMFlow.flow_amount)
         )
-        .join(FactAUMFlow.product)
+        .join(FactAUMFlow.account)
         .join(FactAUMFlow.transaction_type)
         .join(FactAUMFlow.year)
-        .group_by(DimDates.year_number, DimProducts.product_name, DimTransactionTypes.transaction_type_name)
-        .order_by(DimDates.year_number, DimProducts.product_name, DimTransactionTypes.transaction_type_name)
+        .group_by(DimDates.year_number, DimAccounts.account_name, DimTransactionTypes.transaction_type_name)
+        .order_by(DimAccounts.account_name, DimDates.year_number, DimTransactionTypes.transaction_type_name)
         .limit(100)
         .all()
     )
@@ -65,12 +66,12 @@ def flows_summary():
 
     # 🔹 Convert query results into nested dict: year → product → tx_type → amount
     summary = defaultdict(lambda: defaultdict(dict))
-    for year, product, tx_type, amount in results:
-        summary[year][product][tx_type] = float(amount)
+    for account, year, tx_type, amount in results:
+        summary[account][year][tx_type] = float(amount)
     return jsonify(summary)
 """-----------------------------------------------------------------------------------------------------------------"""
-@app.route("/aum-summary")
-def aum_summary():
+@app.route("/wholesaler-aum-account-summary")
+def wholesaler_aum_account_summary():
     # 🔹 AUM summary route: aggregates aum data by wholesaler
     session = SessionLocal()
 
@@ -96,42 +97,57 @@ def aum_summary():
         {"wholesaler": name, "account_id": account, "fee_rate": rate, "account_aum": float(aum), "fee_amount": fee}
         for name, account, rate, aum, fee in results])
 """-----------------------------------------------------------------------------------------------------------------"""
-@app.route("/revenue-summary")
-def revenue_summary():
+@app.route("/revenue-product-monthly-summary")
+def revenue_product_monthly_summary():
 
     session = SessionLocal()
 
     results = (
         session.query(
-            DimDates.full_date,
-            DimAccounts.account_name,
             DimProducts.product_name,
-            DimWholesalers.wholesaler_name,
-            FactRevenue.fee_rate,
+            DimDates.full_date,
             func.sum(FactRevenue.revenue_amount),
         )
         .join(FactRevenue.product)
-        .join(FactRevenue.rev_account)
-        .join(FactRevenue.rev_wholesaler)
         .join(FactRevenue.revenue_date)
-        .group_by(DimDates.full_date,
-            DimAccounts.account_name,
-            DimProducts.product_name,
+        .group_by(DimProducts.product_name, DimDates.full_date)
+        .order_by(DimProducts.product_name, DimDates.full_date)
+        .limit(100)
+        .all()
+    )
+    session.close()
+    """return jsonify([
+        {"product": product, "Rev_Date": date, "revenue": revenue}
+        for product, date, revenue in results])"""
+
+    # 🔹 Convert query results into nested dict: product → month → revenue
+    summary = defaultdict(lambda: defaultdict(dict))
+    for product, month, revenue in results:
+        summary[product][month.isoformat()] = float(revenue)
+    return jsonify(summary)
+"""-----------------------------------------------------------------------------------------------------------------"""
+@app.route("/revenue-wholesaler-summary")
+def revenue_wholesaler_summary():
+
+    session = SessionLocal()
+
+    results = (
+        session.query(
             DimWholesalers.wholesaler_name,
-            FactRevenue.fee_rate)
-        .order_by(DimDates.full_date,
-            DimAccounts.account_name,
-            DimProducts.product_name,
-            DimWholesalers.wholesaler_name,
-            FactRevenue.fee_rate)
+            func.sum(FactRevenue.revenue_amount),
+        )
+        .join(FactRevenue.rev_wholesaler)
+        .group_by(DimWholesalers.wholesaler_name)
+        .order_by(DimWholesalers.wholesaler_name)
         .limit(100)
         .all()
     )
     session.close()
     return jsonify([
-        {"Rev_Date": date, "account": account, "product": product, "wholesaler": wholesaler, "fee_rate": fee_rate, "revenue": revenue}
-        for date, account, product, wholesaler, fee_rate, revenue in results])
+        {"wholesaler": wholesaler, "revenue": revenue}
+        for wholesaler, revenue in results])
 """-----------------------------------------------------------------------------------------------------------------"""
+
 
 if __name__ == '__main__':
     # 🔹 Local dev server runner
