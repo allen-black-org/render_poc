@@ -24,12 +24,11 @@ def home():
         "- Designed a clean and normalized star schema<br><br>"
 
         "<strong>Demo & Resources:</strong><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: <br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: These routes demonstrate live queries using SQLAlchemy ORM models<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-product-monthly-summary'>/revenue-product-monthly-summary</a><br>"
        " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-efficiency-summary'>/revenue-efficiency-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/account-flows-summary'>/account-flows-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
 
         "Check back as new features and routes are added over time."
@@ -38,7 +37,7 @@ def home():
 @app.route('/er-diagram')
 def er_diagram():
     # 🔹 ER Diagram route: returns a PNG file from docs directory
-    file_path = os.path.join(os.path.dirname(__file__), 'docs', 'v1.0', 'dist_perf_dw_er_diagram_spaced.png')
+    file_path = os.path.join(os.path.dirname(__file__), 'docs', 'v1.0', 'Distribution_Performance_ERD.png')
     return send_file(file_path, mimetype='image/png')
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/account-flows-summary")
@@ -64,11 +63,15 @@ def account_flows_summary():
 
     session.close()
 
+    return jsonify([
+        {"account": account, "year": year, "tx_type": tx_type, "flow_amount": float(flow_amount)}
+        for account, year, tx_type, flow_amount in results])
+
     # 🔹 Convert query results into nested dict: year → product → tx_type → amount
-    summary = defaultdict(lambda: defaultdict(dict))
+    """summary = defaultdict(lambda: defaultdict(dict))
     for account, year, tx_type, amount in results:
         summary[account][year][tx_type] = float(amount)
-    return jsonify(summary)
+    return jsonify(summary)"""
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/revenue-efficiency-summary")
 def revenue_efficiency_summary():
@@ -114,11 +117,15 @@ def revenue_product_monthly_summary():
     )
     session.close()
 
+    return jsonify([
+        {"product": product, "month": month, "revenue": float(revenue)}
+        for product, month, revenue in results])
+
     # 🔹 Convert query results into nested dict: product → month → revenue
-    summary = defaultdict(lambda: defaultdict(dict))
+    """summary = defaultdict(lambda: defaultdict(dict))
     for product, month, revenue in results:
         summary[product][month.isoformat()] = float(revenue)
-    return jsonify(summary)
+    return jsonify(summary)"""
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/revenue-wholesaler-summary")
 def revenue_wholesaler_summary():
