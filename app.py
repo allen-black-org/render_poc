@@ -26,8 +26,8 @@ def home():
         "<strong>Demo & Resources:</strong><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: <br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-product-monthly-summary'>/revenue-product-monthly-summary</a><br>"
-       " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/wholesaler-aum-account-summary'>/wholesaler-aum-account-summary</a><br>"
+       " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-efficiency-summary'>/revenue-efficiency-summary</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/account-flows-summary'>/account-flows-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; This route demonstrates a live query using SQLAlchemy ORM models<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
@@ -70,32 +70,29 @@ def account_flows_summary():
         summary[account][year][tx_type] = float(amount)
     return jsonify(summary)
 """-----------------------------------------------------------------------------------------------------------------"""
-@app.route("/wholesaler-aum-account-summary")
-def wholesaler_aum_account_summary():
+@app.route("/revenue-efficiency-summary")
+def revenue_efficiency_summary():
     # 🔹 AUM summary route: aggregates aum data by wholesaler
     session = SessionLocal()
 
     results = (
         session.query(
             DimWholesalers.wholesaler_name,
-            (DimAccounts.account_name + '-' + DimAccounts.account_code).label("account_id"),
-            DimAccounts.base_fee_rate,
-            func.sum(FactAUMFlow.account_aum_amount),
-            func.sum(FactAUMFlow.account_aum_amount*DimAccounts.base_fee_rate),
+            func.sum(FactAUMFlow.account_aum_amount).label("total-aum"),
+            func.sum(FactAUMFlow.account_aum_amount*DimAccounts.base_fee_rate).label("total-revenue"),
+            (func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate)/func.sum(FactAUMFlow.account_aum_amount)).label("effective_fee_rate")
         )
         .join(FactAUMFlow.wholesaler)
         .join(FactAUMFlow.account)
-        .filter(FactAUMFlow.account_aum_amount > 0)
-        .group_by(DimWholesalers.wholesaler_name, DimAccounts.account_name + '-' + DimAccounts.account_code, DimAccounts.base_fee_rate)
-        .order_by(DimWholesalers.wholesaler_name, (DimAccounts.account_name + '-' + DimAccounts.account_code))
-        .limit(100)
+        .group_by(DimWholesalers.wholesaler_name)
+        .order_by(DimWholesalers.wholesaler_name)
         .all()
     )
 
     session.close()
     return jsonify([
-        {"wholesaler": name, "account_id": account, "fee_rate": rate, "account_aum": float(aum), "fee_amount": fee}
-        for name, account, rate, aum, fee in results])
+        {"wholesaler": wholesaler, "aum": float(total_aum), "revenue": float(total_revenue), "efr": float(efr)}
+        for wholesaler, total_aum, total_revenue, efr in results])
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/revenue-product-monthly-summary")
 def revenue_product_monthly_summary():
@@ -116,9 +113,6 @@ def revenue_product_monthly_summary():
         .all()
     )
     session.close()
-    """return jsonify([
-        {"product": product, "Rev_Date": date, "revenue": revenue}
-        for product, date, revenue in results])"""
 
     # 🔹 Convert query results into nested dict: product → month → revenue
     summary = defaultdict(lambda: defaultdict(dict))
