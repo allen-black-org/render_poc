@@ -33,6 +33,7 @@ CREATE TABLE dist_perf_dw.dim_accounts (
 	base_fee_rate numeric NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	wholesaler_id int4 NULL,
 	CONSTRAINT dim_accounts_pkey PRIMARY KEY (id),
 	CONSTRAINT unique_account UNIQUE (account_name, account_code)
 );
@@ -158,7 +159,7 @@ CREATE TABLE IF NOT EXISTS dist_perf_dw.fact_retention_snapshots (
 	days_since_flow INT,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (flow_id, snapshot_date_id)
+    PRIMARY KEY (flow_id, snapshot_date_id, days_since_flow)
 );
 -----------------------------------------------------------------------------------------
 CREATE TABLE dist_perf_dw.fact_revenue (
@@ -211,6 +212,8 @@ CREATE INDEX idx_retention_snap_id ON dist_perf_dw.fact_retention_snapshots(snap
 
 CREATE INDEX idx_revenue_product_id ON dist_perf_dw.fact_revenue(product_id);
 CREATE INDEX idx_revenue_date_id ON dist_perf_dw.fact_revenue(revenue_date_id);
+
+ALTER TABLE dist_perf_dw.dim_accounts ADD CONSTRAINT dim_accounts_wholesaler_fkey FOREIGN KEY (wholesaler_id) REFERENCES dist_perf_dw.dim_wholesalers(id);
 
 ALTER TABLE dist_perf_dw.dim_advisors ADD CONSTRAINT dim_advisors_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES dist_perf_dw.dim_channels(id);
 ALTER TABLE dist_perf_dw.dim_advisors ADD CONSTRAINT dim_advisors_firm_id_fkey FOREIGN KEY (firm_id) REFERENCES dist_perf_dw.dim_firms(id);
