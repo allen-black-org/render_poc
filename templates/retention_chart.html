@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Retention Aging Chart</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h2>Flow Retention Over Time</h2>
+    <div id="chart"></div>
+
+    <script>
+        fetch('/flow-retention-aging')
+            .then(response => response.json())
+            .then(data => {
+                const traces = [];
+
+                for (const [wholesaler, agingData] of Object.entries(data)) {
+                    const x = Object.keys(agingData).map(k => +k).sort((a, b) => a - b);
+                    const y = x.map(age => agingData[age]);
+
+                    traces.push({
+                        x: x,
+                        y: y,
+                        mode: 'lines+markers',
+                        name: wholesaler
+                    });
+                }
+
+                Plotly.newPlot('chart', traces, {
+                    title: 'Retention Aging by Wholesaler',
+                    xaxis: { title: 'Days Since Flow' },
+                    yaxis: { title: 'Retained Amount ($)' }
+                });
+            });
+    </script>
+</body>
+</html>
