@@ -167,7 +167,8 @@ def flow_retention_aging():
         session.query(
             DimWholesalers.wholesaler_name,
             FactRetentionSnapshots.days_since_flow,
-            func.sum(FactRetentionSnapshots.retained_amount),
+            (func.sum(FactRetentionSnapshots.retained_amount)/func.sum(FactAUMFlow.flow_amount)).label(
+                "retention"),
         )
         .join(FactRetentionSnapshots.flow)
         .join(FactAUMFlow.wholesaler)
@@ -179,7 +180,7 @@ def flow_retention_aging():
     session.close()
     summary = defaultdict(dict)
     for wholesaler, aging, retained in results:
-        summary[wholesaler][int(aging)] = float(retained)
+        summary[wholesaler][int(aging)] = round(float(retained), 3)
 
     return jsonify(summary)
 """-----------------------------------------------------------------------------------------------------------------"""
