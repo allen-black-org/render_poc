@@ -12,7 +12,15 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     # 🔹 Home route: static info about the app and links to demo routes & ER diagram
+    global deploy_time
+    try:
+        with open("last_deploy.txt", "r") as f:
+            deploy_time = f.read().strip()
+    except FileNotFoundError:
+        deploy_time = "Unknown"
+
     return (
+        f"<p><strong>Last Deployed:</strong> {deploy_time}</p><br>"
         "Welcome to my Flask BI project!<br><br>"
         "This is a personal, AI-assisted learning app built to explore Python, Flask, and cloud deployment.<br><br>"
 
