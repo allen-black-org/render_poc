@@ -5,6 +5,8 @@ from sqlalchemy import func, case
 from models import (SessionLocal, DimProducts, FactAUMFlow
 , DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue, FactRetentionSnapshots)
 from collections import defaultdict
+from analytics.retention_regression import compute_retention_slopes
+from analytics.retention_data import get_retention_json
 
 load_dotenv()
 app = Flask(__name__)
@@ -38,8 +40,10 @@ def home():
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/account-flows-summary'>/account-flows-summary</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/flow-retention-aging'>/flow-retention-aging</a><br>"
+        
         "<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; A linear regression route. A big accomplishment for the app: <a href='/retention-outliers'>/retention-outliers</a><br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Basic Flow Retention Chart: <a href='/retention-chart'>/retention-chart</a><br><br>"
 
         "Check back as new features and routes are added over time."
@@ -168,29 +172,13 @@ def revenue_wholesaler_summary():
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/flow-retention-aging")
 def flow_retention_aging():
-
-    session = SessionLocal()
-
-    results = (
-        session.query(
-            DimWholesalers.wholesaler_name,
-            FactRetentionSnapshots.days_since_flow,
-            (func.sum(FactRetentionSnapshots.retained_amount)/func.sum(FactAUMFlow.flow_amount)).label(
-                "retention"),
-        )
-        .join(FactRetentionSnapshots.flow)
-        .join(FactAUMFlow.wholesaler)
-        .group_by(DimWholesalers.wholesaler_name,FactRetentionSnapshots.days_since_flow)
-        .order_by(DimWholesalers.wholesaler_name,FactRetentionSnapshots.days_since_flow)
-        .all()
-    )
-
-    session.close()
-    summary = defaultdict(dict)
-    for wholesaler, aging, retained in results:
-        summary[wholesaler][int(aging)] = round(float(retained), 3)
-
-    return jsonify(summary)
+    return jsonify(get_retention_json())
+"""-----------------------------------------------------------------------------------------------------------------"""
+@app.route("/retention-outliers")
+def retention_outliers():
+    retention_data = get_retention_json()
+    modeled = compute_retention_slopes(retention_data)
+    return modeled
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/retention-chart")
 def retention_chart():
