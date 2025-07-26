@@ -1,14 +1,14 @@
 -- Snowflake-compatible DDL refactored from PostgreSQL source
--- Replaces dist_perf_dw schema with dist_perf_db.dist_perf_schema
+-- Replaces dist_perf_dw schema with dist_perf_db.dist_perf_staging
 -- Adjustments for identity, data types, and constraints as needed
 
-CREATE OR REPLACE DATABASE dist_perf_db;
-USE DATABASE dist_perf_db;
+--CREATE OR REPLACE DATABASE dist_perf_db;
+--USE DATABASE dist_perf_db;
 
-CREATE OR REPLACE SCHEMA dist_perf_schema;
-USE SCHEMA dist_perf_schema;
+--CREATE OR REPLACE SCHEMA dist_perf_staging;
+--USE SCHEMA dist_perf_staging;
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_dates (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_dates (
     id INT AUTOINCREMENT PRIMARY KEY,
     full_date DATE NOT NULL,
     day_of_week_name STRING,
@@ -29,12 +29,12 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_dates (
     CONSTRAINT unique_full_date UNIQUE (full_date)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_regions (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_regions (
     id INT AUTOINCREMENT PRIMARY KEY,
     region_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_accounts (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_accounts (
     id INT AUTOINCREMENT PRIMARY KEY,
     account_name STRING NOT NULL,
     account_code STRING NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_accounts (
     CONSTRAINT unique_account UNIQUE (account_name, account_code)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_territories (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_territories (
     id INT AUTOINCREMENT PRIMARY KEY,
     territory_name STRING NOT NULL,
     territory_code STRING NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_territories (
     CONSTRAINT unique_territory UNIQUE (territory_name, region_id, country_name)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_wholesalers (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_wholesalers (
     id INT AUTOINCREMENT PRIMARY KEY,
     wholesaler_name STRING NOT NULL,
     team_lead_id INT,
@@ -66,12 +66,12 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_wholesalers (
     updated_at TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_firm_types (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_firm_types (
     id INT AUTOINCREMENT PRIMARY KEY,
     firm_type_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_firms (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_firms (
     id INT AUTOINCREMENT PRIMARY KEY,
     firm_name STRING NOT NULL,
     firm_type_id INT,
@@ -82,12 +82,12 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_firms (
     CONSTRAINT unique_firm_name UNIQUE (firm_name)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_channels (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_channels (
     id INT AUTOINCREMENT PRIMARY KEY,
     channel_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_advisors (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_advisors (
     id INT AUTOINCREMENT PRIMARY KEY,
     advisor_name STRING NOT NULL,
     region_id INT,
@@ -98,17 +98,17 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_advisors (
     CONSTRAINT unique_advisor_firm UNIQUE (advisor_name, firm_id)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_asset_classes (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_asset_classes (
     id INT AUTOINCREMENT PRIMARY KEY,
     asset_class_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_vehicle_types (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_vehicle_types (
     id INT AUTOINCREMENT PRIMARY KEY,
     vehicle_type_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_products (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_products (
     id INT AUTOINCREMENT PRIMARY KEY,
     product_name STRING NOT NULL,
     asset_class_id INT,
@@ -120,12 +120,12 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_products (
     CONSTRAINT unique_product_name UNIQUE (product_name)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_expense_categories (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_expense_categories (
     id INT AUTOINCREMENT PRIMARY KEY,
     category_name STRING NOT NULL UNIQUE
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_expense_types (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_expense_types (
     id INT AUTOINCREMENT PRIMARY KEY,
     expense_type_name STRING NOT NULL,
     expense_type_category_id INT,
@@ -135,14 +135,14 @@ CREATE TABLE dist_perf_db.dist_perf_schema.dim_expense_types (
     CONSTRAINT unique_expense_type_name UNIQUE (expense_type_name)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.dim_transaction_types (
+CREATE TABLE dist_perf_db.dist_perf_staging.dim_transaction_types (
     id INT AUTOINCREMENT PRIMARY KEY,
     transaction_type_name STRING NOT NULL UNIQUE,
     is_inflow BOOLEAN NOT NULL,
     description STRING
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.fact_aum_flows (
+CREATE TABLE dist_perf_db.dist_perf_staging.fact_aum_flows (
     id INT AUTOINCREMENT PRIMARY KEY,
     date_id INT NOT NULL,
     account_id INT,
@@ -157,7 +157,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.fact_aum_flows (
     updated_at TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.fact_retention_snapshots (
+CREATE TABLE dist_perf_db.dist_perf_staging.fact_retention_snapshots (
     flow_id INT,
     snapshot_date_id INT,
     retained_amount NUMBER NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.fact_retention_snapshots (
     PRIMARY KEY (flow_id, snapshot_date_id, days_since_flow)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.fact_revenue (
+CREATE TABLE dist_perf_db.dist_perf_staging.fact_revenue (
     id INT AUTOINCREMENT PRIMARY KEY,
     account_id INT NOT NULL,
     product_id INT NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.fact_revenue (
     updated_at TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.fact_distribution_expense (
+CREATE TABLE dist_perf_db.dist_perf_staging.fact_distribution_expense (
     id INT AUTOINCREMENT PRIMARY KEY,
     wholesaler_id INT NOT NULL,
     date_id INT NOT NULL,
@@ -193,7 +193,7 @@ CREATE TABLE dist_perf_db.dist_perf_schema.fact_distribution_expense (
     CONSTRAINT unique_expense_entry UNIQUE (wholesaler_id, date_id, expense_type_id)
 );
 
-CREATE TABLE dist_perf_db.dist_perf_schema.fact_wholesaler_comp (
+CREATE TABLE dist_perf_db.dist_perf_staging.fact_wholesaler_comp (
     id INT AUTOINCREMENT PRIMARY KEY,
     wholesaler_id INT NOT NULL,
     date_id INT NOT NULL,
