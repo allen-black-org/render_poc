@@ -19,6 +19,7 @@ sources:
       - name: dim_expense_categories
       - name: dim_firms
       - name: dim_firms_types
+      - name: dim_transaction_types
       - name: fact_aum_flows
       - name: fact_retention_snapshots
       - name: fact_revenue
