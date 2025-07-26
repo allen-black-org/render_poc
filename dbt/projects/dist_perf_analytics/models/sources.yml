@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: raw
+    database: dist_perf_db
+    schema: dist_perf_schema
+    tables:
+      - name: dim_dates
+      - name: dim_accounts
+      - name: dim_wholesalers
+      - name: dim_territories
+      - name: dim_regions
+      - name: dim_channels
+      - name: dim_advisors
+      - name: dim_products
+      - name: dim_asset_classes
+      - name: dim_vehicle_types
+      - name: dim_expense_types
+      - name: dim_expense_categories
+      - name: fact_aum_flows
+      - name: fact_retention_snapshots
+      - name: fact_revenue
+      - name: fact_distribution_expense
+      - name: fact_wholesaler_comp

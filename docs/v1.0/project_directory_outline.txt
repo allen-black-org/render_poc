@@ -1,0 +1,48 @@
+#Format explanation: This is a representation of the BI stack project folder struction at C:\Users\allen\OneDrive\Desktop\ChatGPTs\BI_Study_Plan\Render_HW. Assume from the webapp perspective, this is the root directory. A "--" represents a directory.A tab indentation from the previous "--" line represents a sub directory. No "--" before a name or indent represents file in a directory. I have not included all files in the project.
+
+--Render_HW/                            # Root of Flask + BI stack project
+│
+├── app.py                              # Main Flask app with route definitions
+├── models.py                           # SQLAlchemy ORM models
+├── requirements.txt                    # Python dependencies
+├── build.sh                            # Optional build/deploy script
+├── .env                                # Environment variables (e.g., DATABASE_URL)
+│
+├── analytics/                          # Python-based data analytics helpers
+│   ├── retention_data.py               # Scripts for retention data preparation
+│   └── retention_regression.py         # Regression analysis on retention metrics
+│
+├── notebooks/                          # Jupyter notebooks for EDA or prototyping
+│   ├── aum_trends_analysis.ipynb       # Example: exploring AUM trends
+│   └── retention_eda.ipynb             # Example: visual EDA on retention data
+│
+├── tests/                              # Unit and integration tests
+│   ├── test_routes.py                  # Tests for Flask endpoints
+│   └── test_transformations.py         # Tests for analytics/dbt logic
+│
+├── dbt/                                # dbt project for transforming warehouse data
+│   └── projects/
+│       └── dist_perf_analytics/
+│           ├── dbt_project.yml         # dbt project config
+│           ├── sources.yml             # Source table definitions
+│           ├── macros/                 # Reusable SQL logic
+│           ├── seeds/                  # Static seed data (if any)
+│           ├── snapshots/              # Optional dbt snapshotting
+│           └── models/
+│               ├── staging/            # Raw table transforms (prefixed with stg_)
+│               │   ├── stg_dim_accounts.sql
+│               │   └── ... (others)
+│               └── marts/              # Business-level aggregations (planned)
+│
+├── templates/                          # HTML templates for Flask (e.g., charts)
+│   └── retention_chart.html
+│
+├── static/                             # CSS, JS, and other static frontend assets
+│
+├── docs/                               # Project documentation and assets
+│   └── v1.0/
+│       └── Distribution_Performance_ERD.png
+│
+├── .git/                               # Git version control metadata
+├── .idea/                              # IDE project settings
+└── .venv/                              # Python virtual environment (excluded from Git)
