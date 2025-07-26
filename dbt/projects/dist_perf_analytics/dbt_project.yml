@@ -15,5 +15,5 @@ models:
       +schema: dist_perf_analytics  # materialize mart/analytics models into the analytics schema
       +materialized: table
     staging:
-      +schema: dist_perf_staging    # materialize staging models into the staging schema
+      #+schema: dist_perf_staging    # materialize staging models into the staging schema
       materialized: view
