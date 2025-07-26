@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: raw
     database: dist_perf_db
-    schema: dist_perf_schema
+    schema: dist_perf_staging
     tables:
       - name: dim_dates
       - name: dim_accounts
