@@ -17,6 +17,7 @@ sources:
       - name: dim_vehicle_types
       - name: dim_expense_types
       - name: dim_expense_categories
+      - name: dim_firms
       - name: fact_aum_flows
       - name: fact_retention_snapshots
       - name: fact_revenue
