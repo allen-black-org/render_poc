@@ -13,5 +13,3 @@ models:
   dist_perf_analytics:
     staging:
       materialized: view
-    marts:
-      materialized: table
