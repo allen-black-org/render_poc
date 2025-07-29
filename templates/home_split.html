@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BI Home</title>
+  <style>
+    body, html { margin:0; padding:0; height:100%; font-family: Arial, sans-serif; }
+    .container { display: flex; height: 100vh; }
+    .pane { flex:1; overflow:auto; padding:20px; box-sizing:border-box; }
+    .pane-left { border-right:1px solid #ccc; background: #f9f9f9; }
+    .pane-right { background: #fff; padding-left:40px; }
+    h1 { font-size:24px; margin-bottom:10px; }
+    h2 { font-size:20px; margin-top:20px; margin-bottom:10px; }
+    p { line-height:1.5; }
+    ul, ol { margin-left:20px; line-height:1.5; }
+    .use-case { max-width: 800px; margin: auto; }
+    .section { margin-bottom: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- LEFT PANE: your existing BI links -->
+    <div class="pane pane-left">
+      <p><strong>Last Deployed:</strong> {{ deploy_time }}</p>
+      <p>Welcome to my Flask BI project!<br>
+      This is a personal, AI-assisted learning app…</p>
+      <h3>Demo & Resources:</h3>
+      <ul>
+        <li>Developed full dimensional data warehouse using PostgreSQL</li>
+        <li>Built and deployed Flask app on Render</li>
+        <li>Integrated SQLAlchemy ORM for structured data access</li>
+        <li>Modeled and loaded test data across flows, revenue, expenses, compensation</li>
+        <li>Designed a clean and normalized star schema</li>
+      </ul>
+      <h3>Demo & Resources:</h3>
+      <ul>
+        <li><a href="/product-efficiency-summary">/product-efficiency-summary</a></li>
+        <li><a href="/wholesaler-efficiency-summary">/wholesaler-efficiency-summary</a></li>
+        <li><a href="/revenue-wholesaler-summary">/revenue-wholesaler-summary</a></li>
+        <li><a href="/account-flows-summary">/account-flows-summary</a></li>
+        <li><a href="/flow-retention-aging">/flow-retention-aging</a></li>
+        <li><a href="/retention-outliers">/retention-outliers</a></li>
+        <li><a href="/er-diagram">/er-diagram</a></li>
+        <li><a href="/retention-chart">/retention-chart</a></li>
+      </ul>
+    </div>
+
+    <!-- RIGHT PANE: formatted Use Case content -->
+    <div class="pane pane-right">
+      <div class="use-case">
+        <h1>Use Case: Evaluating Wholesaler Effectiveness…</h1>
+
+        <div class="section">
+      <h2>Key Business Questions</h2>
+      <ol>
+        <li>Which wholesalers are generating the highest net retained assets under management (AUM)?</li>
+        <li>How “sticky” is the AUM each wholesaler brings in—i.e., how long does it stay on the books?</li>
+        <li>Are high-volume wholesalers bringing in assets at disproportionately low fee rates?</li>
+        <li>How do management fee revenues vary across wholesalers when factoring in both volume and retention?</li>
+        <li>What’s the effective return (fee-adjusted contribution) per wholesaler over time?</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Context</h2>
+      <p>Wholesalers are responsible for securing new investments into managed products (e.g., mutual funds, model portfolios). While raw inflow volume is often used as a performance metric, this doesn’t capture long-term business value. For example, short-lived or low-fee AUM may contribute little to revenue. By contrast, smaller but stickier flows into high-fee products may be more profitable.</p>
+    </div>
+
+    <div class="section">
+      <h2>Goals</h2>
+      <ul>
+        <li>Tie asset inflows to individual wholesalers</li>
+        <li>Track the retention of those assets over time</li>
+        <li>Associate each AUM flow with a management fee rate based on the product</li>
+        <li>Calculate revenue contribution by wholesaler</li>
+        <li>Compare wholesalers not just by volume, but by profitability and asset durability</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Planned Outputs</h2>
+      <ul>
+        <li>Visualizations comparing gross vs. net AUM by wholesaler</li>
+        <li>Revenue contribution (AUM × fee rate × duration)</li>
+        <li>Churn or decay rates of AUM over time</li>
+        <li>Dashboard views for executive/sales leadership</li>
+        <li>Analytical models to surface underperforming or undervalued wholesalers</li>
+      </ul>
+    </div>
+
+        <!-- CONTEXT, GOALS, PLANNED OUTPUTS sections follow the same pattern -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>
