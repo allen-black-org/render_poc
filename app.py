@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, jsonify, send_file, render_template
+from flask import Flask, jsonify, send_file, render_template, url_for
 from sqlalchemy import func, case
 from models import (SessionLocal, DimProducts, FactAUMFlow
 , DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue, FactRetentionSnapshots)
@@ -13,41 +13,13 @@ app = Flask(__name__)
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/')
 def home():
-    # 🔹 Home route: static info about the app and links to demo routes & ER diagram
-    global deploy_time
     try:
         with open("last_deploy.txt", "r") as f:
             deploy_time = f.read().strip()
     except FileNotFoundError:
         deploy_time = "Unknown"
+    return render_template('home_split.html', deploy_time=deploy_time)
 
-    return (
-        f"<p><strong>Last Deployed:</strong> {deploy_time}</p><br>"
-        "Welcome to my Flask BI project!<br><br>"
-        "This is a personal, AI-assisted learning app built to explore Python, Flask, and cloud deployment.<br><br>"
-
-        "<strong>Key accomplishments so far:</strong><br>"
-        "- Developed a full dimensional data warehouse using PostgreSQL<br>"
-        "- Built and deployed a Flask application on Render<br>"
-        "- Integrated SQLAlchemy ORM for structured data access and reuse<br>"
-        "- Modeled and loaded test data across flows, revenue, expenses, and compensation<br>"
-        "- Designed a clean and normalized star schema<br><br>"
-
-        "<strong>Demo & Resources:</strong><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Demo routes: These routes demonstrate live queries using SQLAlchemy ORM models<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/product-efficiency-summary'>/product-efficiency-summary</a><br>"
-       " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/wholesaler-efficiency-summary'>/wholesaler-efficiency-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/revenue-wholesaler-summary'>/revenue-wholesaler-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/account-flows-summary'>/account-flows-summary</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;<a href='/flow-retention-aging'>/flow-retention-aging</a><br>"
-        
-        "<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; A linear regression route. A big accomplishment for the app: <a href='/retention-outliers'>/retention-outliers</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; ER Diagram of the Data Warehouse: <a href='/er-diagram'>/er-diagram</a><br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&bull; Basic Flow Retention Chart: <a href='/retention-chart'>/retention-chart</a><br><br>"
-
-        "Check back as new features and routes are added over time."
-    )
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/er-diagram')
 def er_diagram():
