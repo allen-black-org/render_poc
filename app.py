@@ -7,9 +7,14 @@ from models import (SessionLocal, DimProducts, FactAUMFlow
 from collections import defaultdict
 from analytics.retention_regression import compute_retention_slopes
 from analytics.retention_data import get_retention_json
+from analytics.plot_retention_slopes import render_retention_slopes_html
 
 load_dotenv()
 app = Flask(__name__)
+
+# jinja clean itself
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/')
 def home():
@@ -54,11 +59,6 @@ def account_flows_summary():
         {"account": account, "year": year, "tx_type": tx_type, "flow_amount": float(flow_amount)}
         for account, year, tx_type, flow_amount in results])
 
-    # 🔹 Convert query results into nested dict: year → product → tx_type → amount
-    """summary = defaultdict(lambda: defaultdict(dict))
-    for account, year, tx_type, amount in results:
-        summary[account][year][tx_type] = float(amount)
-    return jsonify(summary)"""
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/wholesaler-efficiency-summary")
 def wholesaler_efficiency_summary():
@@ -115,11 +115,6 @@ def product_efficiency_summary():
          "revenue_per_flow": revenue_per_flow, "efr": float(efr)}
         for product, total_aum, total_revenue, count_flows, revenue_per_flow, efr in results])
 
-    # 🔹 Convert query results into nested dict: product → month → revenue
-    """summary = defaultdict(lambda: defaultdict(dict))
-    for product, month, revenue in results:
-        summary[product][month.isoformat()] = float(revenue)
-    return jsonify(summary)"""
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route("/revenue-wholesaler-summary")
 def revenue_wholesaler_summary():
@@ -155,7 +150,19 @@ def retention_outliers():
 @app.route("/retention-chart")
 def retention_chart():
     return render_template("retention_chart.html")
+"""-----------------------------------------------------------------------------------------------------------------"""
+@app.route('/retention-slopes')
+def retention_slopes():
+    # Delegate chart generation to modular script
+    try:
+        graph_html = render_retention_slopes_html()
+        return render_template('retention_slopes.html', graph_html=graph_html)
+    except Exception as e:
+        import traceback;
+        traceback.print_exc()
+        return f"<pre>{traceback.format_exc()}</pre>", 500
 
 if __name__ == '__main__':
-    # 🔹 Local dev server runner
-    app.run()
+    # Forces debug + auto-reload, no env vars needed
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
+
