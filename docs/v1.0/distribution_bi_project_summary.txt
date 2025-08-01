@@ -1,0 +1,59 @@
+Project Summary for Custom GPT: Distribution Performance BI App
+
+Overview:
+The project is a business intelligence (BI) analytics stack for evaluating wholesaler effectiveness in a financial distribution context. It leverages a PostgreSQL star schema data warehouse hosted on Supabase and a Flask-based web application deployed to Render.
+
+Key Components:
+1. **Database**:
+   - PostgreSQL schema `dist_perf_dw` with well-defined dimension and fact tables (dates, accounts, products, flows, revenue, expenses, compensation).
+   - Logic for AUM flows, retention snapshots, revenue computation, and performance tracking.
+   - Data modeled with proper indexes, foreign keys, and surrogate keys for OLAP-style queries.
+
+2. **App Backend**:
+   - Flask app with multiple JSON and HTML routes built using SQLAlchemy ORM.
+   - Key routes:
+     - `/revenue-product-monthly-summary`
+     - `/revenue-efficiency-summary`
+     - `/flow-retention-aging`
+   - Route logic includes group-by, window functions, ratio normalization, and nested JSON transformation.
+
+3. **Frontend / Visualization**:
+   - Basic HTML + Plotly.js dashboard for visualizing retention trends over time.
+   - Uses fetch API to request JSON data from Flask routes and render interactive line charts.
+
+4. **Code Structure**:
+   - `models.py` contains all SQLAlchemy ORM definitions.
+   - `app.py` defines Flask routes and session logic.
+   - `retention_chart.html` visualizes aging retention performance using Plotly.
+   - `requirements.txt` includes Flask, SQLAlchemy, psycopg2, and other dependencies.
+
+5. **Files Uploaded**:
+   - `app.py`, `models.py`, `requirements.txt`, `retention_chart.html`
+   - `dist_perf_dw_ddl.sql`: Current schema definition
+   - `Distribution_Performance_ERD.png`: ER diagram
+   - `orm_reference.md`, `Use_Case_Wholesaler_Effectiveness.pdf`: Documentation
+
+6. **Recent Development Focus**:
+   - Retention logic: 30/60/90/120 day retention snapshots from flow data
+   - Efficiency metrics: Effective fee rate, revenue per AUM
+   - Custom MERGE logic for upserting into `fact_retention_snapshots`
+   - Clarification around retention calculations: exclude new inflows, focus on outflows only
+   - Custom GPT scoping and instruction drafting
+
+Environment:
+- **Supabase**: PostgreSQL DB host
+- **Render**: Flask app host
+- **SQLAlchemy**: ORM layer for all models
+- **Plotly.js**: Visualization tool used in browser
+- **Python**: Main transformation and web framework (Flask)
+
+Goal:
+To support evaluation of sales team performance through dynamic and scalable BI tools built in open source, cloud-native technologies.
+
+Generated on: 2025-07-24 21:20:31
+
+• 2025-07-31: Installed Ubuntu 22.04 under WSL2, integrated Docker Desktop  
+• Deployed Airbyte via abctl (kind + Helm), resolved IPv6-only Supabase by switching to Supavisor pooler  
+• Configured Supabase source & Snowflake destination, ran first sync into dist_perf staging  
+• Scaffolded dbt model wholesaler_performance in dist_perf_analytics schema  
+
