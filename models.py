@@ -2,16 +2,8 @@ import os
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey, Date, Text, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is not set!")
-
 # SQLAlchemy ORM base class
 Base = declarative_base()
-
-# Create the engine and session
-engine = create_engine(DATABASE_URL, echo=False)
-SessionLocal = sessionmaker(bind=engine)
 
 class DimAccounts(Base):
     __tablename__ = "dim_accounts"

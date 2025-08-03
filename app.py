@@ -1,13 +1,15 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, send_file, render_template, url_for
-from sqlalchemy import func, case
-from models import (SessionLocal, DimProducts, FactAUMFlow
+from sqlalchemy import func, case, text
+from models import (DimProducts, FactAUMFlow
 , DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue, FactRetentionSnapshots)
 from collections import defaultdict
 from analytics.retention_regression import compute_retention_slopes
 from analytics.retention_data import get_retention_json
 from analytics.plot_retention_slopes import render_retention_slopes_html
+# the two session factories
+from connections import SessionPG, SessionSF
 
 load_dotenv()
 app = Flask(__name__)
@@ -15,6 +17,19 @@ app = Flask(__name__)
 # jinja clean itself
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.jinja_env.auto_reload = True
+
+"""-----------------------------------------------------------------------------------------------------------------"""
+"""This is the first route to connect to snowflake"""
+"""-----------------------------------------------------------------------------------------------------------------"""
+@app.route("/some-data")
+def some_data():
+    session = SessionSF()
+    try:
+        stmt = text("select wholesaler_name from dist_perf_db.dist_perf_staging.dim_wholesalers limit 10")
+        rows = session.execute(stmt).scalars().all()
+        return jsonify(rows)
+    finally:
+        print('1')
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/')
 def home():
@@ -35,7 +50,7 @@ def er_diagram():
 @app.route("/account-flows-summary")
 def account_flows_summary():
     # 🔹 Flows summary route: aggregates FactAUMFlow data by year, product, and transaction type
-    session = SessionLocal()
+    session = SessionPG
 
     results = (
         session.query(
@@ -63,7 +78,7 @@ def account_flows_summary():
 @app.route("/wholesaler-efficiency-summary")
 def wholesaler_efficiency_summary():
     # 🔹 AUM summary route: aggregates aum data by wholesaler
-    session = SessionLocal()
+    session = SessionPG
 
     results = (
         session.query(
@@ -89,7 +104,7 @@ def wholesaler_efficiency_summary():
 @app.route("/product-efficiency-summary")
 def product_efficiency_summary():
 
-    session = SessionLocal()
+    session = SessionPG
 
     results = (
         session.query(
@@ -119,7 +134,7 @@ def product_efficiency_summary():
 @app.route("/revenue-wholesaler-summary")
 def revenue_wholesaler_summary():
 
-    session = SessionLocal()
+    session = SessionPG
 
     results = (
         session.query(

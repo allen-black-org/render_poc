@@ -1,12 +1,19 @@
-from models import (SessionLocal, DimProducts, FactAUMFlow
+import os
+from models import (DimProducts, FactAUMFlow
 , DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue, FactRetentionSnapshots)
 from sqlalchemy import func, case
 from collections import defaultdict
 from flask import Flask, jsonify, send_file, render_template
+from connections import SessionPG, SessionSF
+
+USE_SF = os.getenv("USE_SNOWFLAKE", "false").lower() == "true"
+
+def get_session():
+    return SessionSF() if USE_SF else SessionPG()
 
 
 def get_retention_json():
-    session = SessionLocal()
+    session = get_session()
     results = (
         session.query(
             DimWholesalers.wholesaler_name,
