@@ -20,27 +20,6 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.jinja_env.auto_reload = True
 
 """-----------------------------------------------------------------------------------------------------------------"""
-"""This is the first route to connect to snowflake"""
-"""-----------------------------------------------------------------------------------------------------------------"""
-@app.route("/some-data")
-def some_data():
-    session = SessionSF()
-    """try:
-        stmt = text("select wholesaler_name from dist_perf_db.dist_perf_staging.dim_wholesalers limit 12")
-        rows = session.execute(stmt).scalars().all()
-        return jsonify(rows)
-    finally:
-        print('1')"""
-
-    rows = session.query(DimAdvisorsSF.advisor_name).limit(20).all()
-    session.close()
-
-    return jsonify([
-        {"advisor": row[0]}  # grab the first (and only) element of each tuple/Row
-        for row in rows
-    ])
-
-"""-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/')
 def home():
     try:
