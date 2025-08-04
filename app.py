@@ -2,13 +2,14 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, send_file, render_template, url_for
 from sqlalchemy import func, case, text
-from models import (DimProducts, FactAUMFlow
-, DimTransactionTypes, DimDates, DimWholesalers, DimAccounts, FactRevenue, FactRetentionSnapshots)
+from models_pg import (DimProductsPG, FactAUMFlowPG, DimWholesalersPG, DimAccountsPG, FactRevenuePG, FactRetentionSnapshotsPG)
 from collections import defaultdict
+from models_sf import (DimAccountsSF, DimAdvisorsSF, DimProductsSF, FactAUMFlowSF, DimWholesalersSF, FactRevenueSF
+                      , DimTransactionTypesSF, DimDatesSF)
 from analytics.retention_regression import compute_retention_slopes
 from analytics.retention_data import get_retention_json
 from analytics.plot_retention_slopes import render_retention_slopes_html
-# the two session factories
+# the two session factoriesDimAdvisorsSF
 from connections import SessionPG, SessionSF
 
 load_dotenv()
@@ -24,12 +25,21 @@ app.jinja_env.auto_reload = True
 @app.route("/some-data")
 def some_data():
     session = SessionSF()
-    try:
-        stmt = text("select wholesaler_name from dist_perf_db.dist_perf_staging.dim_wholesalers limit 10")
+    """try:
+        stmt = text("select wholesaler_name from dist_perf_db.dist_perf_staging.dim_wholesalers limit 12")
         rows = session.execute(stmt).scalars().all()
         return jsonify(rows)
     finally:
-        print('1')
+        print('1')"""
+
+    rows = session.query(DimAdvisorsSF.advisor_name).limit(20).all()
+    session.close()
+
+    return jsonify([
+        {"advisor": row[0]}  # grab the first (and only) element of each tuple/Row
+        for row in rows
+    ])
+
 """-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/')
 def home():
@@ -50,20 +60,20 @@ def er_diagram():
 @app.route("/account-flows-summary")
 def account_flows_summary():
     # 🔹 Flows summary route: aggregates FactAUMFlow data by year, product, and transaction type
-    session = SessionPG
+    session = SessionSF()
 
     results = (
         session.query(
-            DimAccounts.account_name,
-            DimDates.year_number,
-            DimTransactionTypes.transaction_type_name,
-            func.sum(FactAUMFlow.flow_amount)
+            DimAccountsSF.account_name,
+            DimDatesSF.year_number,
+            DimTransactionTypesSF.transaction_type_name,
+            func.sum(FactAUMFlowSF.flow_amount)
         )
-        .join(FactAUMFlow.account)
-        .join(FactAUMFlow.transaction_type)
-        .join(FactAUMFlow.year)
-        .group_by(DimDates.year_number, DimAccounts.account_name, DimTransactionTypes.transaction_type_name)
-        .order_by(DimAccounts.account_name, DimDates.year_number, DimTransactionTypes.transaction_type_name)
+        .join(FactAUMFlowSF.account)
+        .join(FactAUMFlowSF.transaction_type)
+        .join(FactAUMFlowSF.year)
+        .group_by(DimDatesSF.year_number, DimAccountsSF.account_name, DimTransactionTypesSF.transaction_type_name)
+        .order_by(DimAccountsSF.account_name, DimDatesSF.year_number, DimTransactionTypesSF.transaction_type_name)
         .limit(100)
         .all()
     )
@@ -78,21 +88,21 @@ def account_flows_summary():
 @app.route("/wholesaler-efficiency-summary")
 def wholesaler_efficiency_summary():
     # 🔹 AUM summary route: aggregates aum data by wholesaler
-    session = SessionPG
+    session = SessionSF()
 
     results = (
         session.query(
-            DimWholesalers.wholesaler_name,
-            func.sum(FactAUMFlow.account_aum_amount).label("total-aum"),
-            func.sum(FactAUMFlow.account_aum_amount*DimAccounts.base_fee_rate).label("total-revenue"),
-            func.count(FactAUMFlow.id).label("count_flows"),
-            (func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate)/func.count(FactAUMFlow.id)).label("revenue_per_flow"),
-            (func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate)/func.sum(FactAUMFlow.account_aum_amount)).label("effective_fee_rate")
+            DimWholesalersSF.wholesaler_name,
+            func.sum(FactAUMFlowSF.account_aum_amount).label("total-aum"),
+            func.sum(FactAUMFlowSF.account_aum_amount*DimAccountsSF.base_fee_rate).label("total-revenue"),
+            func.count(FactAUMFlowSF.id).label("count_flows"),
+            (func.sum(FactAUMFlowSF.account_aum_amount * DimAccountsSF.base_fee_rate)/func.count(FactAUMFlowSF.id)).label("revenue_per_flow"),
+            (func.sum(FactAUMFlowSF.account_aum_amount * DimAccountsSF.base_fee_rate)/func.sum(FactAUMFlowSF.account_aum_amount)).label("effective_fee_rate")
         )
-        .join(FactAUMFlow.wholesaler)
-        .join(FactAUMFlow.account)
-        .group_by(DimWholesalers.wholesaler_name)
-        .order_by(DimWholesalers.wholesaler_name)
+        .join(FactAUMFlowSF.wholesaler)
+        .join(FactAUMFlowSF.account)
+        .group_by(DimWholesalersSF.wholesaler_name)
+        .order_by(DimWholesalersSF.wholesaler_name)
         .all()
     )
 
@@ -104,23 +114,23 @@ def wholesaler_efficiency_summary():
 @app.route("/product-efficiency-summary")
 def product_efficiency_summary():
 
-    session = SessionPG
+    session = SessionSF()
 
     results = (
         session.query(
-            DimProducts.product_name,
-            func.sum(FactAUMFlow.account_aum_amount).label("total-aum"),
-            func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate).label("total-revenue"),
-            func.count(FactAUMFlow.id).label("count_flows"),
-            (func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate) / func.count(FactAUMFlow.id)).label(
+            DimProductsSF.product_name,
+            func.sum(FactAUMFlowSF.account_aum_amount).label("total-aum"),
+            func.sum(FactAUMFlowSF.account_aum_amount * DimAccountsSF.base_fee_rate).label("total-revenue"),
+            func.count(FactAUMFlowSF.id).label("count_flows"),
+            (func.sum(FactAUMFlowSF.account_aum_amount * DimAccountsSF.base_fee_rate) / func.count(FactAUMFlowSF.id)).label(
                 "revenue_per_flow"),
-            (func.sum(FactAUMFlow.account_aum_amount * DimAccounts.base_fee_rate) / func.sum(
-                FactAUMFlow.account_aum_amount)).label("effective_fee_rate")
+            (func.sum(FactAUMFlowSF.account_aum_amount * DimAccountsSF.base_fee_rate) / func.sum(
+                FactAUMFlowSF.account_aum_amount)).label("effective_fee_rate")
         )
-        .join(FactAUMFlow.product)
-        .join(FactAUMFlow.account)
-        .group_by(DimProducts.product_name)
-        .order_by(DimProducts.product_name)
+        .join(FactAUMFlowSF.product)
+        .join(FactAUMFlowSF.account)
+        .group_by(DimProductsSF.product_name)
+        .order_by(DimProductsSF.product_name)
         .all()
     )
 
@@ -134,16 +144,16 @@ def product_efficiency_summary():
 @app.route("/revenue-wholesaler-summary")
 def revenue_wholesaler_summary():
 
-    session = SessionPG
+    session = SessionSF()
 
     results = (
         session.query(
-            DimWholesalers.wholesaler_name,
-            func.sum(FactRevenue.revenue_amount),
+            DimWholesalersSF.wholesaler_name,
+            func.sum(FactRevenueSF.revenue_amount),
         )
-        .join(FactRevenue.rev_wholesaler)
-        .group_by(DimWholesalers.wholesaler_name)
-        .order_by(DimWholesalers.wholesaler_name)
+        .join(FactRevenueSF.rev_wholesaler)
+        .group_by(DimWholesalersSF.wholesaler_name)
+        .order_by(DimWholesalersSF.wholesaler_name)
         .limit(100)
         .all()
     )
@@ -180,4 +190,3 @@ def retention_slopes():
 if __name__ == '__main__':
     # Forces debug + auto-reload, no env vars needed
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
-

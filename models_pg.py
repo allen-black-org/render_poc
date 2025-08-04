@@ -1,11 +1,10 @@
 import os
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey, Date, Text, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from connections import PostgresBase
 
-# SQLAlchemy ORM base class
-Base = declarative_base()
 
-class DimAccounts(Base):
+class DimAccountsPG(PostgresBase):
     __tablename__ = "dim_accounts"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -15,7 +14,7 @@ class DimAccounts(Base):
     base_fee_rate = Column(Numeric)
     base_fee_amount = Column(Numeric)
 
-class DimAdvisors(Base):
+class DimAdvisorsPG(PostgresBase):
     __tablename__ = "dim_advisors"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -25,12 +24,12 @@ class DimAdvisors(Base):
     channel_id = Column(Integer, ForeignKey("dist_perf_dw.dim_channels.id"))
     firm_id = Column(Integer, ForeignKey("dist_perf_dw.dim_firms.id"))
 
-    region = relationship("DimRegions", foreign_keys=[region_id])
-    channel = relationship("DimChannels", foreign_keys=[channel_id])
-    firm = relationship("DimFirms", foreign_keys=[firm_id])
+    region = relationship("DimRegionsPG", foreign_keys=[region_id])
+    channel = relationship("DimChannelsPG", foreign_keys=[channel_id])
+    firm = relationship("DimFirmsPG", foreign_keys=[firm_id])
 
 
-class DimAssetClasses(Base):
+class DimAssetClassesPG(PostgresBase):
     __tablename__ = "dim_asset_classes"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -38,7 +37,7 @@ class DimAssetClasses(Base):
     asset_class_name = Column(String)
 
 
-class DimChannels(Base):
+class DimChannelsPG(PostgresBase):
     __tablename__ = "dim_channels"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -46,7 +45,7 @@ class DimChannels(Base):
     channel_name = Column(String)
 
 
-class DimDates(Base):
+class DimDatesPG(PostgresBase):
     __tablename__ = "dim_dates"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -67,7 +66,7 @@ class DimDates(Base):
     is_year_end = Column(Boolean)
 
 
-class DimExpenseCats(Base):
+class DimExpenseCatsPG(PostgresBase):
     __tablename__ = "dim_expense_categories"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -75,7 +74,7 @@ class DimExpenseCats(Base):
     category_name = Column(String)
 
 
-class DimExpenseTypes(Base):
+class DimExpenseTypesPG(PostgresBase):
     __tablename__ = "dim_expense_types"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -84,10 +83,10 @@ class DimExpenseTypes(Base):
     expense_type_category_id = Column(String,ForeignKey("dist_perf_dw.dim_expense_categories.id"))
     is_fixed = Column(Boolean)
 
-    expense_type_category = relationship("DimExpenseCats", foreign_keys=[expense_type_category_id])
+    expense_type_category = relationship("DimExpenseCatsPG", foreign_keys=[expense_type_category_id])
 
 
-class DimFirmTypes(Base):
+class DimFirmTypesPG(PostgresBase):
     __tablename__ = "dim_firm_types"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -96,7 +95,7 @@ class DimFirmTypes(Base):
 
 
 
-class DimFirms(Base):
+class DimFirmsPG(PostgresBase):
     __tablename__ = "dim_firms"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -106,10 +105,10 @@ class DimFirms(Base):
     headquarters_city = Column(String)
     headquarters_country = Column(String)
 
-    firmtype = relationship("DimFirmTypes", foreign_keys=[firm_type_id])
+    firmtype = relationship("DimFirmTypesPG", foreign_keys=[firm_type_id])
 
 
-class DimProducts(Base):
+class DimProductsPG(PostgresBase):
     __tablename__ = "dim_products"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -120,11 +119,11 @@ class DimProducts(Base):
     launch_date = Column(Date)
     is_active = Column(Boolean)
 
-    asset_class = relationship("DimAssetClasses", foreign_keys=[asset_class_id])
-    vehicle_type = relationship("DimVehicles", foreign_keys=[vehicle_type_id])
+    asset_class = relationship("DimAssetClassesPG", foreign_keys=[asset_class_id])
+    vehicle_type = relationship("DimVehiclesPG", foreign_keys=[vehicle_type_id])
 
 
-class DimRegions(Base):
+class DimRegionsPG(PostgresBase):
     __tablename__ = "dim_regions"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -132,7 +131,7 @@ class DimRegions(Base):
     region_name = Column(String)
 
 
-class DimTerritories(Base):
+class DimTerritoriesPG(PostgresBase):
     __tablename__ = "dim_territories"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -142,10 +141,10 @@ class DimTerritories(Base):
     region_id = Column(Integer, ForeignKey("dist_perf_dw.dim_regions.id"))
     country_name = Column(String)
 
-    terr_region = relationship("DimRegions", foreign_keys=[region_id])
+    terr_region = relationship("DimRegionsPG", foreign_keys=[region_id])
 
 
-class DimTransactionTypes(Base):
+class DimTransactionTypesPG(PostgresBase):
     __tablename__ = "dim_transaction_types"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -154,7 +153,7 @@ class DimTransactionTypes(Base):
     is_inflow = Column(Boolean)
 
 
-class DimVehicles(Base):
+class DimVehiclesPG(PostgresBase):
     __tablename__ = "dim_vehicle_types"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -162,7 +161,7 @@ class DimVehicles(Base):
     vehicle_type_name = Column(String)
 
 
-class DimWholesalers(Base):
+class DimWholesalersPG(PostgresBase):
     __tablename__ = "dim_wholesalers"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -172,10 +171,10 @@ class DimWholesalers(Base):
     hire_date = Column(Date)
     territory_id = Column(Numeric, ForeignKey("dist_perf_dw.dim_territories.id"))
 
-    ws_territory = relationship("DimTerritories", foreign_keys=[territory_id])
+    ws_territory = relationship("DimTerritoriesPG", foreign_keys=[territory_id])
 
 
-class FactAUMFlow(Base):
+class FactAUMFlowPG(PostgresBase):
     __tablename__ = "fact_aum_flows"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -188,13 +187,13 @@ class FactAUMFlow(Base):
     flow_amount = Column(Numeric)
     account_aum_amount = Column(Numeric)
 
-    year = relationship("DimDates", foreign_keys=[date_id])
-    product = relationship("DimProducts", foreign_keys=[product_id])
-    wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
-    transaction_type = relationship("DimTransactionTypes", foreign_keys=[transaction_type_id])
-    account = relationship("DimAccounts", foreign_keys=[account_id])
+    year = relationship("DimDatesPG", foreign_keys=[date_id])
+    product = relationship("DimProductsPG", foreign_keys=[product_id])
+    wholesaler = relationship("DimWholesalersPG", foreign_keys=[wholesaler_id])
+    transaction_type = relationship("DimTransactionTypesPG", foreign_keys=[transaction_type_id])
+    account = relationship("DimAccountsPG", foreign_keys=[account_id])
 
-class FactRetentionSnapshots(Base):
+class FactRetentionSnapshotsPG(PostgresBase):
     __tablename__ = "fact_retention_snapshots"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -206,11 +205,11 @@ class FactRetentionSnapshots(Base):
     created_at = Column(Date)
     updated_at = Column(Date)
 
-    flow = relationship("FactAUMFlow", foreign_keys=[flow_id])
-    snapshot_date = relationship("DimDates", foreign_keys=[snapshot_date_id])
+    flow = relationship("FactAUMFlowPG", foreign_keys=[flow_id])
+    snapshot_date = relationship("DimDatesPG", foreign_keys=[snapshot_date_id])
 
 
-class FactRevenue(Base):
+class FactRevenuePG(PostgresBase):
     __tablename__ = "fact_revenue"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -224,13 +223,13 @@ class FactRevenue(Base):
     created_at = Column(Date)
     updated_at = Column(Date)
 
-    product = relationship("DimProducts", foreign_keys=[product_id])
-    revenue_date = relationship("DimDates", foreign_keys=[revenue_date_id])
-    rev_account = relationship("DimAccounts", foreign_keys=[account_id])
-    rev_wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
+    product = relationship("DimProductsPG", foreign_keys=[product_id])
+    revenue_date = relationship("DimDatesPG", foreign_keys=[revenue_date_id])
+    rev_account = relationship("DimAccountsPG", foreign_keys=[account_id])
+    rev_wholesaler = relationship("DimWholesalersPG", foreign_keys=[wholesaler_id])
 
 
-class FactDistributionExpense(Base):
+class FactDistributionExpensePG(PostgresBase):
     __tablename__ = "fact_distribution_expense"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -244,12 +243,12 @@ class FactDistributionExpense(Base):
     created_at = Column(Date)
     updated_at = Column(Date)
 
-    wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
-    date = relationship("DimDates", foreign_keys=[date_id])
-    expense_type = relationship("DimExpenseTypes", foreign_keys=[expense_type_id])
+    wholesaler = relationship("DimWholesalersPG", foreign_keys=[wholesaler_id])
+    date = relationship("DimDatesPG", foreign_keys=[date_id])
+    expense_type = relationship("DimExpenseTypesPG", foreign_keys=[expense_type_id])
 
 
-class FactWholesalerComp(Base):
+class FactWholesalerCompPG(PostgresBase):
     __tablename__ = "fact_wholesaler_comp"
     __table_args__ = {"schema": "dist_perf_dw"}
 
@@ -262,5 +261,5 @@ class FactWholesalerComp(Base):
     created_at = Column(Date)
     updated_at = Column(Date)
 
-    wholesaler = relationship("DimWholesalers", foreign_keys=[wholesaler_id])
-    date = relationship("DimDates", foreign_keys=[date_id])
+    wholesaler = relationship("DimWholesalersPG", foreign_keys=[wholesaler_id])
+    date = relationship("DimDatesPG", foreign_keys=[date_id])
