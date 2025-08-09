@@ -30,6 +30,10 @@ def home():
     return render_template('home_split.html', deploy_time=deploy_time)
 
 """-----------------------------------------------------------------------------------------------------------------"""
+@app.route("/github-privacy")
+def privacy():
+    return render_template("privacy_policy.html")
+"""-----------------------------------------------------------------------------------------------------------------"""
 @app.route('/er-diagram')
 def er_diagram():
     # 🔹 ER Diagram route: returns a PNG file from docs directory

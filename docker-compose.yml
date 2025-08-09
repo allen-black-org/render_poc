@@ -1,0 +1,16 @@
+services:
+  dbt:
+    build:
+      context: .          # project root containing Dockerfile
+      dockerfile: Dockerfile
+    # Mount your local dbt project for live edits without rebuilding
+    volumes:
+      - ./dbt:/usr/app/dbt:ro
+      # Mount your dbt profiles for authentication
+      - ~/.dbt/profiles.yml:/root/.dbt/profiles.yml:ro
+    # Load credentials from .env in project root
+    env_file:
+      - .env
+    # Default command: run your dbt models
+    command: ["run"]
+    # You can override via `docker-compose run dbt <cmd>`
