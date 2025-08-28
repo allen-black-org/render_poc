@@ -4238,3 +4238,53 @@ SELECT id, wholesaler_id, date_id, base_salary, incentive_comp, notes, created_a
 [0m17:47:39.652864 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000160A5BF4170>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000160CBDFAFF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000160CBDF9F70>]}
 [0m17:47:39.653141 [debug] [MainThread]: Flushing usage events
 [0m17:47:41.274314 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m19:24:02.705865 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CFF104F8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CFECE6B250>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CFF3253ED0>]}
+
+
+============================== 19:24:02.710807 | 2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3 ==============================
+[0m19:24:02.710807 [info ] [MainThread]: Running with dbt=1.10.8
+[0m19:24:02.711191 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Users\\Allen\\.dbt', 'version_check': 'True', 'fail_fast': 'False', 'log_path': 'C:\\Users\\Allen\\Projects\\Distribtuion_Performance\\dbt\\projects\\dist_perf_analytics\\logs', 'warn_error': 'None', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'invocation_command': 'dbt build', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m19:24:03.385470 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CFF157FA80>]}
+[0m19:24:03.430872 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF941DA9C0>]}
+[0m19:24:03.432080 [info ] [MainThread]: Registered adapter: snowflake=1.10.0
+[0m19:24:03.742386 [debug] [MainThread]: checksum: 265d66e81f90af29a7a28579c9b54d938c94f4a57c57be5f853267ae509b5fcb, vars: {}, profile: , target: , version: 1.10.8
+[0m19:24:03.800414 [info ] [MainThread]: Unable to do partial parsing because profile has changed
+[0m19:24:03.800779 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF94173D50>]}
+[0m19:24:04.786260 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.dist_perf_analytics.marts
+[0m19:24:04.793638 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF9441E300>]}
+[0m19:24:04.843638 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\Allen\Projects\Distribtuion_Performance\dbt\projects\dist_perf_analytics\target\manifest.json
+[0m19:24:04.845519 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\Allen\Projects\Distribtuion_Performance\dbt\projects\dist_perf_analytics\target\semantic_manifest.json
+[0m19:24:04.902691 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '2c9c01c7-d4d7-4ba1-8564-3ddadec5aea3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF94A451D0>]}
+[0m19:24:04.903130 [info ] [MainThread]: Found 20 models, 20 sources, 478 macros
+[0m19:24:04.905723 [info ] [MainThread]: 
+[0m19:24:04.906003 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m19:24:04.906209 [info ] [MainThread]: 
+[0m19:24:04.906553 [debug] [MainThread]: Acquiring new snowflake connection 'master'
+[0m19:24:04.910750 [debug] [ThreadPool]: Acquiring new snowflake connection 'list_DIST_PERF_USER'
+[0m19:24:05.037568 [debug] [ThreadPool]: Using snowflake connection "list_DIST_PERF_USER"
+[0m19:24:05.037877 [debug] [ThreadPool]: On list_DIST_PERF_USER: show terse schemas in database DIST_PERF_USER
+    limit 10000
+/* {"app": "dbt", "dbt_version": "1.10.8", "profile_name": "snowflake_dbt", "target_name": "dev", "connection_name": "list_DIST_PERF_USER"} */
+[0m19:24:05.038097 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m19:24:06.029022 [debug] [ThreadPool]: Snowflake adapter: Error running SQL: show terse schemas in database DIST_PERF_USER
+    limit 10000
+/* {"app": "dbt", "dbt_version": "1.10.8", "profile_name": "snowflake_dbt", "target_name": "dev", "connection_name": "list_DIST_PERF_USER"} */
+[0m19:24:06.029404 [debug] [ThreadPool]: Snowflake adapter: Rolling back transaction.
+[0m19:24:06.029716 [debug] [ThreadPool]: Snowflake adapter: Error running SQL: macro list_schemas
+[0m19:24:06.029954 [debug] [ThreadPool]: Snowflake adapter: Rolling back transaction.
+[0m19:24:06.030791 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m19:24:06.031209 [debug] [MainThread]: Connection 'list_DIST_PERF_USER' was left open.
+[0m19:24:06.031614 [debug] [MainThread]: On list_DIST_PERF_USER: No close available on handle
+[0m19:24:06.031855 [info ] [MainThread]: 
+[0m19:24:06.032134 [info ] [MainThread]: Finished running  in 0 hours 0 minutes and 1.13 seconds (1.13s).
+[0m19:24:06.032532 [error] [MainThread]: Encountered an error:
+Runtime Error
+  Database error while listing schemas in database "DIST_PERF_USER"
+  Database Error
+    250001 (08001): Failed to connect to DB: HGC40667.us-east-1.snowflakecomputing.com:443. Incorrect username or password was specified.
+[0m19:24:06.033236 [debug] [MainThread]: Command `dbt build` failed at 19:24:06.033141 after 3.46 seconds
+[0m19:24:06.033533 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF93CCD980>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CFF20FD850>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CF94AE4D10>]}
+[0m19:24:06.033850 [debug] [MainThread]: Flushing usage events
+[0m19:24:06.223797 [debug] [MainThread]: An error was encountered while trying to flush usage events

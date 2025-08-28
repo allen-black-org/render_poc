@@ -22,20 +22,23 @@
     <!-- LEFT PANE: your existing BI links -->
     <div class="pane pane-left">
       <p><strong>Last Deployed:</strong> {{ deploy_time }}</p>
-      <p>Welcome to my Flask BI project!<br>
-      This is a personal, AI-assisted learning app…</p>
-      <h3>Demo & Resources:</h3>
+      <p>
+          Welcome to my Flask BI project!<br>
+          This is a personal, AI-assisted learning app.
+          <ul>
+              <li>Cloud hosted PostgresSQL database simulates an ODS source</li>
+              <li>ELT From PostgresSLQ to Snowflake via containerized Airbyte</li>
+              <li>Snowflake transformations via DBT</li>
+              <li>All Python/SQLAlchemy/Flask hosted data sourced from Snowflake</li>
+          </ul>
+      </p>
+      <h3>Flask app Demo & Resources:</h3>
       <ul>
-        Developed full dimensional data warehouse using Snowflake and PostgreSQL
+        Developed full dimensional data warehouse in Snowflake, with ODS data sourced from PostgreSQL
           <ul>
               <li><a href="/er-diagram" target="_blank" rel="noopener noreferrer">/er-diagram</a></li>
           </ul>
-        Built and deployed Flask app on Render
-          <ul>
-              <li><a href="/retention-chart" target="_blank" rel="noopener noreferrer">/retention-chart</a></li>
-              <li><a href="/retention-slopes" target="_blank" rel="noopener noreferrer">/retention-slopes</a> Linear regression results!!!</li>
-          </ul>
-        Integrated SQLAlchemy ORM for structured data access from Snowflake. Modeled and loaded test data across flows, revenue, expenses, compensation
+        Integrated SQLAlchemy ORM for structured data access from Snowflake.
           <ul>
               <li><a href="/product-efficiency-summary" target="_blank" rel="noopener noreferrer">/product-efficiency-summary</a></li>
               <li><a href="/wholesaler-efficiency-summary" target="_blank" rel="noopener noreferrer">/wholesaler-efficiency-summary</a></li>
@@ -43,6 +46,11 @@
               <li><a href="/account-flows-summary" target="_blank" rel="noopener noreferrer">/account-flows-summary</a></li>
               <li><a href="/flow-retention-aging" target="_blank" rel="noopener noreferrer">/flow-retention-aging</a></li>
               <li><a href="/retention-outliers" target="_blank" rel="noopener noreferrer">/retention-outliers</a></li>
+          </ul>
+        Basic Plotly Dash charts sourced from Snowflake
+          <ul>
+              <li><a href="/retention-chart" target="_blank" rel="noopener noreferrer">/retention-chart</a></li>
+              <li><a href="/retention-slopes" target="_blank" rel="noopener noreferrer">/retention-slopes</a> Linear regression results!!!</li>
           </ul>
       </ul>
     </div>
