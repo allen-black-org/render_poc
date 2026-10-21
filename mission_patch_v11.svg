@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&amp;display=swap');
+    </style>
+    <radialGradient id="ground" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#2a2d33"/>
+      <stop offset="1" stop-color="#0b0c0f"/>
+    </radialGradient>
+    <linearGradient id="cool" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d7372a"/>
+      <stop offset="0.45" stop-color="#8e3a7a"/>
+      <stop offset="1" stop-color="#2f8fe8"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3f4f6"/>
+      <stop offset="0.5" stop-color="#9ca3af"/>
+      <stop offset="1" stop-color="#d1d5db"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0a0"/>
+      <stop offset="0.5" stop-color="#c99a2e"/>
+      <stop offset="1" stop-color="#f5d06b"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#f3f4f6"/>
+      <stop offset="0.4" stop-color="#6b7280"/>
+      <stop offset="1" stop-color="#6b7280" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="atomize" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="28" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+      <feGaussianBlur in="displaced" stdDeviation="1.4"/>
+    </filter>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0 H0 V36" fill="none" stroke="#4b5059" stroke-width="0.5" opacity="0.4"/>
+    </pattern>
+    <pattern id="pCirc" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="0"  cy="0"  r="20" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.45"/>
+      <circle cx="40" cy="0"  r="20" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.45"/>
+      <circle cx="0"  cy="40" r="20" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.45"/>
+      <circle cx="40" cy="40" r="20" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.45"/>
+    </pattern>
+    <pattern id="pDia" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M12,0 L24,12 L12,24 L0,12 Z" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.4"/>
+    </pattern>
+    <pattern id="pSq" width="28" height="28" patternUnits="userSpaceOnUse">
+      <rect x="3" y="3" width="22" height="22" fill="none" stroke="#6b7280" stroke-width="0.9" opacity="0.45"/>
+      <rect x="10" y="10" width="8" height="8" fill="#9ca3af" fill-opacity="0.18"/>
+    </pattern>
+
+    <!-- Fuller angular laurel leaf: wide faceted blade with a midrib. Base at origin, tip along -y. -->
+    <g id="lf">
+      <path d="M0,0 L13,-14 L0,-36 L-13,-14 Z"/>
+      <path d="M0,-3 L0,-32" fill="none" stroke="#1f2937" stroke-width="1"/>
+    </g>
+
+    <!-- One side of the wreath: from the tie (bottom) up to about halfway up the ring. -->
+    <g id="laurelR" fill="url(#silver)" stroke="#1f2937" stroke-width="1" stroke-linejoin="miter">
+      <!-- Outer row, dense -->
+      <use href="#lf" transform="rotate(165 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(160 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(155 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(150 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(145 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(140 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(135 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(130 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(125 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(120 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(115 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(110 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(105 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(100 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(95 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(90 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(85 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(80 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(75 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(70 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(65 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(60 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(55 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <use href="#lf" transform="rotate(50 500 500) translate(500 72) rotate(-60) scale(1.05)"/>
+      <!-- Inner row, staggered between outer leaves -->
+      <use href="#lf" transform="rotate(162.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(157.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(152.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(147.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(142.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(137.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(132.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(127.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(122.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(117.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(112.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(107.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(102.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(97.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(92.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(87.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(82.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(77.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(72.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(67.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(62.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(57.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+      <use href="#lf" transform="rotate(52.5 500 500) translate(500 108) rotate(-60) scale(0.95)"/>
+    </g>
+
+    <path id="archPath" d="M188.8,445.1 A316,316 0 0 1 811.2,445.1"/>
+  </defs>
+
+  <!-- Outer canvas -->
+  <rect width="1000" height="1000" fill="#040405"/>
+
+  <!-- ============ PATCH (scaled to make room for the frame) ============ -->
+  <g transform="translate(500 500) scale(0.82) translate(-500 -500)">
+    <circle cx="500" cy="500" r="470" fill="url(#ground)"/>
+    <circle cx="500" cy="500" r="470" fill="url(#grid)"/>
+
+    <!-- Atomized cooling ring: red to blue -->
+    <circle cx="500" cy="500" r="402" fill="none" stroke="url(#cool)" stroke-width="60" opacity="0.9" filter="url(#atomize)"/>
+
+    <!-- Embroidered gold border -->
+    <circle cx="500" cy="500" r="470" fill="none" stroke="url(#silver)" stroke-width="14"/>
+    <circle cx="500" cy="500" r="455" fill="none" stroke="url(#silver)" stroke-width="3" stroke-dasharray="6 4"/>
+    <circle cx="500" cy="500" r="440" fill="none" stroke="url(#silver)" stroke-width="2"/>
+
+    <!-- Pattern rings, outer to inner -->
+    <circle cx="500" cy="500" r="340" fill="#0b0c0f"/>
+    <circle cx="500" cy="500" r="340" fill="url(#pCirc)"/>
+    <circle cx="500" cy="500" r="306" fill="#0b0c0f"/>
+    <circle cx="500" cy="500" r="306" fill="url(#pDia)"/>
+    <circle cx="500" cy="500" r="272" fill="#0b0c0f"/>
+    <circle cx="500" cy="500" r="272" fill="url(#pSq)"/>
+    <circle cx="500" cy="500" r="240" fill="#0b0c0f"/>
+
+    <circle cx="500" cy="500" r="340" fill="none" stroke="#9ca3af" stroke-width="1" opacity="0.6"/>
+    <circle cx="500" cy="500" r="306" fill="none" stroke="#9ca3af" stroke-width="1" opacity="0.6"/>
+    <circle cx="500" cy="500" r="272" fill="none" stroke="#9ca3af" stroke-width="1" opacity="0.6"/>
+    <circle cx="500" cy="500" r="240" fill="none" stroke="#9ca3af" stroke-width="1" opacity="0.6"/>
+
+    <!-- Motto banner -->
+    <path d="M153.3,438.9 A352,352 0 0 1 846.7,438.9 L799.4,447.2 A304,304 0 0 0 200.6,447.2 Z"
+          fill="#0b0c0f" stroke="url(#silver)" stroke-width="1.5"/>
+    <text fill="url(#silver)" font-family="Cinzel, 'Trajan Pro', 'Times New Roman', serif" font-weight="600" font-size="36" letter-spacing="1.5" text-anchor="middle">
+      <textPath href="#archPath" startOffset="50%">MENTE, IGNIS; EX IGNE, MOTUS.</textPath>
+    </text>
+
+
+    <!-- Twin scroll expander -->
+    <g transform="translate(500 500) scale(1.46) translate(-500 -500)">
+      <circle cx="500" cy="500" r="110" fill="url(#core)" opacity="0.3"/>
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M650,500 L625.6,572.5 L570,621.2 L500,635 L435,612.6 L391.7,562.5 L380,500 L400.4,442.5 L445,404.7 L500,395 L550,413.4 L582.3,452.5 L590,500 L573.6,542.5 L540,569.3 L500,575 L465,560.6 L443.7,532.5 L440,500 L452.4,472.5 L475,456.7 L500,455 L520,465.4 L530.3,482.5"
+              stroke="#050506" stroke-width="11"/>
+        <path d="M350,500 L374.4,427.5 L430,378.8 L500,365 L565,387.4 L608.3,437.5 L620,500 L599.6,557.5 L555,595.3 L500,605 L450,586.6 L417.7,547.5 L410,500 L426.4,457.5 L460,430.7 L500,425 L535,439.4 L556.3,467.5 L560,500 L547.6,527.5 L525,543.3 L500,545 L480,534.6 L469.7,517.5"
+              stroke="#050506" stroke-width="11"/>
+        <path d="M650,500 L625.6,572.5 L570,621.2 L500,635 L435,612.6 L391.7,562.5 L380,500 L400.4,442.5 L445,404.7 L500,395 L550,413.4 L582.3,452.5 L590,500 L573.6,542.5 L540,569.3 L500,575 L465,560.6 L443.7,532.5 L440,500 L452.4,472.5 L475,456.7 L500,455 L520,465.4 L530.3,482.5"
+              stroke="url(#silver)" stroke-width="7" filter="url(#glow)"/>
+        <path d="M350,500 L374.4,427.5 L430,378.8 L500,365 L565,387.4 L608.3,437.5 L620,500 L599.6,557.5 L555,595.3 L500,605 L450,586.6 L417.7,547.5 L410,500 L426.4,457.5 L460,430.7 L500,425 L535,439.4 L556.3,467.5 L560,500 L547.6,527.5 L525,543.3 L500,545 L480,534.6 L469.7,517.5"
+              stroke="#c4c9d1" stroke-width="7" filter="url(#glow)"/>
+      </g>
+      <circle cx="500" cy="500" r="18" fill="url(#core)"/>
+      <circle cx="500" cy="500" r="6" fill="#f3f4f6"/>
+    </g>
+
+    <!-- Lightning bolt -->
+    <g transform="translate(500 500) scale(1.2) translate(-500 -500)">
+      <path transform="translate(500 500) scale(1.25) translate(-509 -546)"
+            d="M522,470 L486,538 L510,538 L478,622 L532,528 L508,528 L540,470 Z"
+            fill="#f3f4f6" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" filter="url(#glow)"/>
+    </g>
+  </g>
+
+  <!-- ============ FRAME (laurel wreath, crown, tie) ============ -->
+  <circle cx="500" cy="500" r="412" fill="none" stroke="url(#silver)" stroke-width="5"/>
+  <circle cx="500" cy="500" r="402" fill="none" stroke="url(#silver)" stroke-width="2"/>
+
+  <!-- Laurel: right side drawn once, left side mirrored -->
+  <use href="#laurelR"/>
+  <use href="#laurelR" transform="translate(1000 0) scale(-1 1)"/>
+
+  <!-- Crown at top -->
+  <g fill="url(#silver)" stroke="#1f2937" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M466,96 L466,62 L484,80 L500,46 L516,80 L534,62 L534,96 Z"/>
+    <circle cx="466" cy="58" r="5"/>
+    <circle cx="500" cy="42" r="5"/>
+    <circle cx="534" cy="58" r="5"/>
+  </g>
+
+  <!-- Tie at bottom: band with crossed stems -->
+  <g stroke="url(#silver)" stroke-width="6" stroke-linecap="round" fill="none">
+    <path d="M478,948 L440,984"/>
+    <path d="M522,948 L560,984"/>
+  </g>
+  <rect x="474" y="920" width="52" height="30" rx="3" fill="url(#silver)" stroke="#1f2937" stroke-width="1.5"/>
+</svg>
